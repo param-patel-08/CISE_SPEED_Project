@@ -119,17 +119,13 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     Perspective: string;
   }) {
     const collection = this.client.db('SPEED').collection('articles');
-    try {
-      let newArticle = await collection.insertOne({ 
-        ...article,
-        DOE: new Date(),
-        Status: 'Pending',
-        Impressions: 0
-      });
-      return { status: 'Success', message: 'Article created successfully', details: newArticle};
-    } catch (error) {
-      return { status: 'Failed', message: error.message };
-    }
+    let newArticle = await collection.insertOne({ 
+      ...article,
+      DOE: new Date(),
+      Status: 'Pending',
+      Impressions: 0
+    });
+    return { status: 'Success', message: 'Article created successfully', details: newArticle};
   }
 
   async onModuleDestroy() {
