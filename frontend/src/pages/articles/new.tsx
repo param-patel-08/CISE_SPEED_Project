@@ -10,7 +10,9 @@ import {
   Snackbar,
   Alert,
   Stack,
-  MenuItem
+  MenuItem,
+  Select,
+  SelectChangeEvent
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -62,6 +64,23 @@ const NewArticle = () => {
 
   const changeAuthor = (index: number, value: string) => {
     setAuthors(authors.map((oldValue, i) => (index === i ? value : oldValue)));
+  };
+
+  const getColorForPerspective = (value: string) => {
+    switch (value) {
+      case "1":
+        return "red";
+      case "2":
+        return "orange";
+      case "3":
+        return "yellow";
+      case "4":
+        return "lightgreen";
+      case "5":
+        return "green";
+      default:
+        return "";
+    }
   };
 
   return (
@@ -143,7 +162,7 @@ const NewArticle = () => {
             required
           />
 
-          {/* Updated Dropdown for Perspective */}
+          {/* Updated Dropdown for Perspective with Color Cues */}
           <TextField
             select
             label="Perspective"
@@ -153,15 +172,22 @@ const NewArticle = () => {
             value={perspective}
             onChange={(event) => setPerspective(event.target.value)}
             required
+            SelectProps={{
+              renderValue: (value) => (
+                <span style={{ color: getColorForPerspective(value) }}>
+                  {value} - {["", "Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"][Number(value)]}
+                </span>
+              )
+            }}
           >
             <MenuItem value="">
               <em>Select a perspective</em>
             </MenuItem>
-            <MenuItem value="1">1 - Strongly Disagree</MenuItem>
-            <MenuItem value="2">2 - Disagree</MenuItem>
-            <MenuItem value="3">3 - Neutral</MenuItem>
-            <MenuItem value="4">4 - Agree</MenuItem>
-            <MenuItem value="5">5 - Strongly Agree</MenuItem>
+            <MenuItem value="1" style={{ color: "red" }}>1 - Strongly Disagree</MenuItem>
+            <MenuItem value="2" style={{ color: "orange" }}>2 - Disagree</MenuItem>
+            <MenuItem value="3" style={{ color: "yellow" }}>3 - Neutral</MenuItem>
+            <MenuItem value="4" style={{ color: "lightgreen" }}>4 - Agree</MenuItem>
+            <MenuItem value="5" style={{ color: "green" }}>5 - Strongly Agree</MenuItem>
           </TextField>
 
           <Button variant="contained" color="primary" type="submit">
