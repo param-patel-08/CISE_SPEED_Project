@@ -143,6 +143,7 @@ const NewArticle = () => {
             required
           />
 
+          {/* Updated Dropdown for Perspective */}
           <TextField
             select
             label="Perspective"
@@ -156,8 +157,11 @@ const NewArticle = () => {
             <MenuItem value="">
               <em>Select a perspective</em>
             </MenuItem>
-            <MenuItem value="Support">Support</MenuItem>
-            <MenuItem value="Reject">Reject</MenuItem>
+            <MenuItem value="1">1 - Strongly Disagree</MenuItem>
+            <MenuItem value="2">2 - Disagree</MenuItem>
+            <MenuItem value="3">3 - Neutral</MenuItem>
+            <MenuItem value="4">4 - Agree</MenuItem>
+            <MenuItem value="5">5 - Strongly Agree</MenuItem>
           </TextField>
 
           <Button variant="contained" color="primary" type="submit">
