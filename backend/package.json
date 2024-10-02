@@ -1,5 +1,6 @@
 {
   "name": "backend",
+  "proxy": "http://localhost:3001",
   "version": "0.0.1",
   "description": "",
   "author": "",

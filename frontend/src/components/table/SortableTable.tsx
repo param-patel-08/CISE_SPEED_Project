@@ -1,4 +1,13 @@
 import React from "react";
+import {
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  TableContainer,
+  Paper,
+} from "@mui/material";
 
 interface SortableTableProps {
   headers: { key: string; label: string }[];
@@ -6,24 +15,26 @@ interface SortableTableProps {
 }
 
 const SortableTable: React.FC<SortableTableProps> = ({ headers, data }) => (
-  <table>
-    <thead>
-      <tr>
-        {headers.map((header) => (
-          <th key={header.key}>{header.label}</th>
-        ))}
-      </tr>
-    </thead>
-    <tbody>
-      {data.map((row, i) => (
-        <tr key={i}>
+  <TableContainer component={Paper}>
+    <Table>
+      <TableHead>
+        <TableRow>
           {headers.map((header) => (
-            <td key={header.key}>{row[header.key]}</td>
+            <TableCell key={header.key}>{header.label}</TableCell>
           ))}
-        </tr>
-      ))}
-    </tbody>
-  </table>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {data.map((row, i) => (
+          <TableRow key={i}>
+            {headers.map((header) => (
+              <TableCell key={header.key}>{row[header.key]}</TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </TableContainer>
 );
 
 export default SortableTable;

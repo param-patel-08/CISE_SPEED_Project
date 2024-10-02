@@ -1,23 +1,54 @@
-import { IoMdArrowDropdown } from "react-icons/io";
-import NavBar from "./nav/NavBar";
-import NavDropdown from "./nav/NavDropdown";
-import NavItem from "./nav/NavItem";
+import React, { useState } from 'react';
+import { AppBar, Toolbar, Typography, Button, Menu, MenuItem, IconButton } from '@mui/material';
+import { IoMdArrowDropdown } from 'react-icons/io';
+import { MenuProps } from '@mui/material/Menu';
 
-const PopulatedNavBar = () => {
+const PopulatedNavBar: React.FC = () => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleDropdownClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleDropdownClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
-    <NavBar>
-      <NavItem>SPEED</NavItem>
-      <NavItem route="/" end>
-        Home
-      </NavItem>
-      <NavItem dropdown route="/articles">
-        Articles <IoMdArrowDropdown />
-        <NavDropdown>
-          <NavItem route="/articles">View articles</NavItem>
-          <NavItem route="/articles/new">Submit new</NavItem>
-        </NavDropdown>
-      </NavItem>
-    </NavBar>
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          SPEED
+        </Typography>
+        <Button color="inherit" href="/">
+          Home
+        </Button>
+        <div>
+          <Button
+            color="inherit"
+            onClick={handleDropdownClick}
+            endIcon={<IoMdArrowDropdown />}
+          >
+            Articles
+          </Button>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleDropdownClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+          >
+            <MenuItem onClick={handleDropdownClose} component="a" href="/articles">
+              View articles
+            </MenuItem>
+            <MenuItem onClick={handleDropdownClose} component="a" href="/articles/new">
+              Submit new
+            </MenuItem>
+          </Menu>
+        </div>
+      </Toolbar>
+    </AppBar>
   );
 };
 

@@ -38,25 +38,18 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
 
 export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
   // Map the data to ensure all articles have consistent property names
-  let data;
-  
-  try {
-    let responce = await axios.get("http://localhost:3001/api/articles");
-    data = responce.data;
-  } catch {
-    data = [];
-  }
-  
-  
+  let responce = await axios.get("http://localhost:3001/articles/pending");
+  let data = responce.data;
 
-  const articles = data.map((article: ArticlesInterface ) => ({
-    Title: article.Title,
-    Authors: article.Authors,
-    Source: article.Source,
-    PubYear: article.PubYear,
-    SEPractice: article.SEPractice,
-    Perspective: article.Perspective
-  }));
+  const articles = data.map((article: ArticlesInterface) => ({
+  Title: article.Title,
+  Authors: article.Authors.join(", "),
+  Source: article.Source,
+  PubYear: article.PubYear,
+  SEPractice: article.SEPractice,
+  Perspective: article.Perspective
+}));
+
 
 
   return {

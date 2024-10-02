@@ -26,7 +26,7 @@ const NewDiscussion = () => {
 
     console.log(formdata);
 
-    let responce = await axios.post("http://localhost:3001/api/article", formdata);
+    let responce = await axios.post("api/article", formdata);
 
     console.log(responce);
     
