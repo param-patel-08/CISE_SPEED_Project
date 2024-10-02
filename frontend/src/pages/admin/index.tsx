@@ -28,6 +28,8 @@ interface Article {
   PubYear?: string;
   SEPractice?: string;
   Perspective?: string;
+  Status: string; // Adding status field
+  DateOfSubmission: string; // Adding submission date field
 }
 
 export default function Moderator() {
@@ -109,6 +111,8 @@ export default function Moderator() {
                 <TableCell>Title</TableCell>
                 <TableCell>Authors</TableCell>
                 <TableCell>Impressions</TableCell>
+                <TableCell>Status</TableCell> {/* Add Status Column */}
+                <TableCell>Date of Submission</TableCell> {/* Add Date Column */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -117,6 +121,8 @@ export default function Moderator() {
                   <TableCell>{article.Title}</TableCell>
                   <TableCell>{article.Authors.join(", ")}</TableCell>
                   <TableCell>{article.Impressions}</TableCell>
+                  <TableCell>{article.Status}</TableCell> {/* Show Status */}
+                  <TableCell>{article.DateOfSubmission}</TableCell> {/* Show Date */}
                 </TableRow>
               ))}
             </TableBody>
@@ -136,6 +142,8 @@ export default function Moderator() {
                 <TableCell>Title</TableCell>
                 <TableCell>Authors</TableCell>
                 <TableCell>Action</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Date of Submission</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -166,6 +174,8 @@ export default function Moderator() {
                       Reject
                     </Button>
                   </TableCell>
+                  <TableCell>{article.Status}</TableCell> {/* Show Status */}
+                  <TableCell>{article.DateOfSubmission}</TableCell> {/* Show Date */}
                 </TableRow>
               ))}
             </TableBody>
@@ -188,7 +198,8 @@ export default function Moderator() {
                 <strong>Authors:</strong> {selectedArticle.Authors.join(", ")}
               </Typography>
               <Typography variant="body1">
-                <strong>Source:</strong> <a href={selectedArticle.Source}>{selectedArticle.Source}</a>
+                <strong>Source:</strong>{" "}
+                <a href={selectedArticle.Source}>{selectedArticle.Source}</a>
               </Typography>
               <Typography variant="body1">
                 <strong>Year:</strong> {selectedArticle.PubYear}
@@ -198,6 +209,13 @@ export default function Moderator() {
               </Typography>
               <Typography variant="body1">
                 <strong>Perspective:</strong> {selectedArticle.Perspective}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Status:</strong> {selectedArticle.Status} {/* Show Status */}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Date of Submission:</strong> {selectedArticle.DateOfSubmission}{" "}
+                {/* Show Date */}
               </Typography>
             </Box>
           ) : (
