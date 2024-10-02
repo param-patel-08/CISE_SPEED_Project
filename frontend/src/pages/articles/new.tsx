@@ -22,6 +22,7 @@ const NewArticle = () => {
   const [pubYear, setPubYear] = useState<string>("");
   const [sePractice, setSEPractice] = useState("");
   const [perspective, setPerspective] = useState("");
+  const [summary, setSummary] = useState(""); // New state for the summary
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" as "success" | "error" });
 
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
@@ -34,6 +35,7 @@ const NewArticle = () => {
       PubYear: pubYear,
       SEPractice: sePractice,
       Perspective: perspective,
+      Summary: summary,  // Include the summary in the form submission
     };
 
     try {
@@ -46,6 +48,7 @@ const NewArticle = () => {
       setPubYear("");
       setSEPractice("");
       setPerspective("");
+      setSummary(""); // Clear the summary after submission
     } catch (error) {
       console.error("Error submitting article:", error);
       setSnackbar({ open: true, message: "Error submitting article. Please try again.", severity: "error" });
@@ -160,7 +163,20 @@ const NewArticle = () => {
             required
           />
 
-          {/* Updated Dropdown for Perspective with Color Cues */}
+          {/* New TextField for Summary */}
+          <TextField
+            label="Summary of SE Practice"
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={4} // To give it a text-area look
+            margin="normal"
+            value={summary}
+            onChange={(event) => setSummary(event.target.value)}
+            required
+          />
+
+          {/* Dropdown for Perspective with Color Cues */}
           <TextField
             select
             label="Perspective"
