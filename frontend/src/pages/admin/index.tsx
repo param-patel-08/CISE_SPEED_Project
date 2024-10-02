@@ -23,7 +23,7 @@ interface Article {
   _id: string;
   Title: string;
   Authors: string[];
-  Impressions: number;
+  Impressions?: number;
   Source?: string;
   PubYear?: string;
   SEPractice?: string;
@@ -97,6 +97,7 @@ export default function Moderator() {
         Moderator Page
       </Typography>
 
+      {/* Analytics Section */}
       <Box marginBottom={4}>
         <Typography variant="h5" component="h2" gutterBottom>
           Analytics
@@ -123,6 +124,7 @@ export default function Moderator() {
         </TableContainer>
       </Box>
 
+      {/* Moderate Articles Section */}
       <Box>
         <Typography variant="h5" component="h2" gutterBottom>
           Moderate Articles
@@ -138,14 +140,17 @@ export default function Moderator() {
             </TableHead>
             <TableBody>
               {pendingArticles.map((article) => (
-                <TableRow key={article._id}>
+                <TableRow key={article._id} onClick={() => handleClick(article._id)}>
                   <TableCell>{article.Title}</TableCell>
                   <TableCell>{article.Authors.join(", ")}</TableCell>
                   <TableCell>
                     <Button
                       variant="contained"
                       color="success"
-                      onClick={() => handleApproval(article._id, "Approved")}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevents triggering the modal on button click
+                        handleApproval(article._id, "Approved");
+                      }}
                       sx={{ marginRight: 1 }}
                     >
                       Approve
@@ -153,7 +158,10 @@ export default function Moderator() {
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={() => handleApproval(article._id, "Rejected")}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevents triggering the modal on button click
+                        handleApproval(article._id, "Rejected");
+                      }}
                     >
                       Reject
                     </Button>
