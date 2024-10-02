@@ -4,12 +4,13 @@ import axios from "axios";  // Import axios
 
 
 interface ArticlesInterface {
-  title: string;
-  authors: string[];
-  source: string;
-  pubyear: number;
-  doi: string;
-  claim: string;
+  Title: string;
+  Authors: string[];
+  Source: string;
+  PubYear: number;
+  Status: string;
+  SEPractice: string;
+  Perspective: string;
 }
 
 type ArticlesProps = {
@@ -18,12 +19,12 @@ type ArticlesProps = {
 
 const Articles: NextPage<ArticlesProps> = ({ articles }) => {
   const headers: { key: keyof ArticlesInterface; label: string }[] = [
-    { key: "title", label: "Title" },
-    { key: "authors", label: "Authors" },
-    { key: "source", label: "Source" },
-    { key: "pubyear", label: "Publication Year" },
-    { key: "doi", label: "DOI" },
-    { key: "claim", label: "Claim" },
+    { key: "Title", label: "Title" },
+    { key: "Authors", label: "Authors" },
+    { key: "Source", label: "Source" },
+    { key: "PubYear", label: "Publication Year" },
+    { key: "SEPractice", label: "Software Engineering Practice"},
+    { key: "Perspective", label: "Perspective" }
   ];
 
   return (
@@ -37,16 +38,24 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
 
 export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
   // Map the data to ensure all articles have consistent property names
-  let responce = await axios.get("http://localhost:3001/api/article");
-  let data = responce.data;
+  let data;
+  
+  try {
+    let responce = await axios.get("http://localhost:3001/api/articles");
+    data = responce.data;
+  } catch {
+    data = [];
+  }
+  
+  
 
   const articles = data.map((article: ArticlesInterface ) => ({
-    title: article.title,
-    authors: article.authors,
-    source: article.source,
-    pubyear: article.pubyear,
-    doi: article.doi,
-    claim: article.claim
+    Title: article.Title,
+    Authors: article.Authors,
+    Source: article.Source,
+    PubYear: article.PubYear,
+    SEPractice: article.SEPractice,
+    Perspective: article.Perspective
   }));
 
 
