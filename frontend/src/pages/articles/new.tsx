@@ -10,9 +10,7 @@ import {
   Snackbar,
   Alert,
   Stack,
-  MenuItem,
-  Select,
-  SelectChangeEvent
+  MenuItem
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -73,7 +71,7 @@ const NewArticle = () => {
       case "2":
         return "orange";
       case "3":
-        return "yellow";
+        return "#D4AC0D"; // Darker shade for better visibility
       case "4":
         return "lightgreen";
       case "5":
@@ -185,7 +183,7 @@ const NewArticle = () => {
             </MenuItem>
             <MenuItem value="1" style={{ color: "red" }}>1 - Strongly Disagree</MenuItem>
             <MenuItem value="2" style={{ color: "orange" }}>2 - Disagree</MenuItem>
-            <MenuItem value="3" style={{ color: "yellow" }}>3 - Neutral</MenuItem>
+            <MenuItem value="3" style={{ color: "#D4AC0D" }}>3 - Neutral</MenuItem>
             <MenuItem value="4" style={{ color: "lightgreen" }}>4 - Agree</MenuItem>
             <MenuItem value="5" style={{ color: "green" }}>5 - Strongly Agree</MenuItem>
           </TextField>
