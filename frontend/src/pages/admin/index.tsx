@@ -174,24 +174,30 @@ export default function Moderator() {
       </Box>
 
       {/* Modal Popup for showing article details */}
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>Article Details</DialogTitle>
         <DialogContent>
           {loading ? (
             <CircularProgress />
           ) : selectedArticle ? (
             <Box>
-              <Typography variant="h6">Title: {selectedArticle.Title}</Typography>
-              <Typography variant="body1">
-                Authors: {selectedArticle.Authors.join(", ")}
-              </Typography>
-              <Typography variant="body1">Source: {selectedArticle.Source}</Typography>
-              <Typography variant="body1">Year: {selectedArticle.PubYear}</Typography>
-              <Typography variant="body1">
-                SE Practice: {selectedArticle.SEPractice}
+              <Typography variant="h6" gutterBottom>
+                Title: {selectedArticle.Title}
               </Typography>
               <Typography variant="body1">
-                Perspective: {selectedArticle.Perspective}
+                <strong>Authors:</strong> {selectedArticle.Authors.join(", ")}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Source:</strong> <a href={selectedArticle.Source}>{selectedArticle.Source}</a>
+              </Typography>
+              <Typography variant="body1">
+                <strong>Year:</strong> {selectedArticle.PubYear}
+              </Typography>
+              <Typography variant="body1">
+                <strong>SE Practice:</strong> {selectedArticle.SEPractice}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Perspective:</strong> {selectedArticle.Perspective}
               </Typography>
             </Box>
           ) : (
