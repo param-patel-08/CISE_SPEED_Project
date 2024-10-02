@@ -11,6 +11,7 @@ interface ArticlesInterface {
   Status: string;
   SEPractice: string;
   Perspective: string;
+  Impressions: string;
 }
 
 type ArticlesProps = {
@@ -24,7 +25,8 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
     { key: "Source", label: "Source" },
     { key: "PubYear", label: "Publication Year" },
     { key: "SEPractice", label: "Software Engineering Practice"},
-    { key: "Perspective", label: "Perspective" }
+    { key: "Perspective", label: "Perspective" },
+    { key: "Impressions", label: "Impressions"}
   ];
 
   return (
@@ -38,7 +40,7 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
 
 export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
   // Map the data to ensure all articles have consistent property names
-  let responce = await axios.get("http://localhost:3001/articles/pending");
+  let responce = await axios.get("http://localhost:3001/articles");
   let data = responce.data;
 
   const articles = data.map((article: ArticlesInterface) => ({
@@ -47,7 +49,8 @@ export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
   Source: article.Source,
   PubYear: article.PubYear,
   SEPractice: article.SEPractice,
-  Perspective: article.Perspective
+  Perspective: article.Perspective,
+  Impressions: article.Impressions
 }));
 
 

@@ -23,6 +23,9 @@ const PopulatedNavBar: React.FC = () => {
         <Button color="inherit" href="/">
           Home
         </Button>
+        <Button color="inherit" href="/admin">
+          Admin
+        </Button>
         <div>
           <Button
             color="inherit"

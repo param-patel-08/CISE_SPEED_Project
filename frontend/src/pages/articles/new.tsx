@@ -1,41 +1,59 @@
-import { FormEvent, useState } from "react";
-import formStyles from "../../styles/Form.module.scss";
+import React, { FormEvent, useState } from "react";
 import axios from "axios";
+import { 
+  Button, 
+  Container, 
+  TextField, 
+  Typography, 
+  Box, 
+  IconButton, 
+  Snackbar,
+  Alert,
+  Stack,
+  MenuItem
+} from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
-const NewDiscussion = () => {
+const NewArticle = () => {
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState<string[]>([]);
   const [source, setSource] = useState("");
-  const [pubYear, setPubYear] = useState<number>(0);
-  const [doi, setDoi] = useState("");
-  const [claim, setClaim] = useState("");
-  const [linkedDiscussion, setLinkedDiscussion] = useState("");
+  const [pubYear, setPubYear] = useState<string>("");
+  const [sePractice, setSEPractice] = useState("");
+  const [perspective, setPerspective] = useState("");
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" as "success" | "error" });
 
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    
-    let formdata = {
-        title,
-        authors,
-        source,
-        pubyear: pubYear,
-        doi,
-        claim,
-      };
+    const formdata = {
+      Title: title,
+      Authors: authors,
+      Source: source,
+      PubYear: pubYear,
+      SEPractice: sePractice,
+      Perspective: perspective,
+    };
 
-    console.log(formdata);
-
-    let responce = await axios.post("api/article", formdata);
-
-    console.log(responce);
-    
+    try {
+      const response = await axios.post("/api/articles", formdata);
+      console.log(response);
+      setSnackbar({ open: true, message: "Article submitted successfully!", severity: "success" });
+      setTitle("");
+      setAuthors([]);
+      setSource("");
+      setPubYear("");
+      setSEPractice("");
+      setPerspective("");
+    } catch (error) {
+      console.error("Error submitting article:", error);
+      setSnackbar({ open: true, message: "Error submitting article. Please try again.", severity: "error" });
+    }
   };
 
-  // Some helper methods for the authors array
-
   const addAuthor = () => {
-    setAuthors(authors.concat([""]));
+    setAuthors([...authors, ""]);
   };
 
   const removeAuthor = (index: number) => {
@@ -43,118 +61,122 @@ const NewDiscussion = () => {
   };
 
   const changeAuthor = (index: number, value: string) => {
-    setAuthors(
-      authors.map((oldValue, i) => {
-        return index === i ? value : oldValue;
-      })
-    );
+    setAuthors(authors.map((oldValue, i) => (index === i ? value : oldValue)));
   };
 
-
-  // Return the full form
-
   return (
-    <div className="container">
-      <h1>New Article</h1>
-      <form className={formStyles.form} onSubmit={submitNewArticle}>
-        <label htmlFor="title">Title:</label>
-        <input
-          className={formStyles.formItem}
-          type="text"
-          name="title"
-          id="title"
-          value={title}
-          onChange={(event) => {
-            setTitle(event.target.value);
-          }}
-        />
+    <Container>
+      <Typography variant="h4" gutterBottom>
+        New Article
+      </Typography>
+      <form onSubmit={submitNewArticle}>
+        <Stack spacing={2}>
+          <TextField
+            label="Title"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            required
+          />
 
-        <label htmlFor="author">Authors:</label>
-        {authors.map((author, index) => {
-          return (
-            <div key={`author ${index}`} className={formStyles.arrayItem}>
-              <input
-                type="text"
-                name="author"
+          <Typography variant="h6" gutterBottom>
+            Authors
+          </Typography>
+          {authors.map((author, index) => (
+            <Stack direction="row" spacing={1} key={`author ${index}`} alignItems="center">
+              <TextField
+                label={`Author ${index + 1}`}
+                variant="outlined"
+                fullWidth
                 value={author}
                 onChange={(event) => changeAuthor(index, event.target.value)}
-                className={formStyles.formItem}
+                required
               />
-              <button
+              <IconButton
                 onClick={() => removeAuthor(index)}
-                className={formStyles.buttonItem}
-                style={{ marginLeft: "3rem" }}
-                type="button"
+                color="error"
+                aria-label="remove author"
               >
-                -
-              </button>
-            </div>
-          );
-        })}
-        <button
-          onClick={() => addAuthor()}
-          className={formStyles.buttonItem}
-          style={{ marginLeft: "auto" }}
-          type="button"
-        >
-          +
-        </button>
+                <RemoveIcon />
+              </IconButton>
+            </Stack>
+          ))}
+          <Box mt={1}>
+            <IconButton
+              onClick={addAuthor}
+              color="primary"
+              aria-label="add author"
+            >
+              <AddIcon />
+            </IconButton>
+          </Box>
 
-        <label htmlFor="source">Source:</label>
-        <input
-          className={formStyles.formItem}
-          type="text"
-          name="source"
-          id="source"
-          value={source}
-          onChange={(event) => {
-            setSource(event.target.value);
-          }}
-        />
+          <TextField
+            label="Source"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={source}
+            onChange={(event) => setSource(event.target.value)}
+            required
+          />
 
-        <label htmlFor="pubYear">Publication Year:</label>
-        <input
-          className={formStyles.formItem}
-          type="number"
-          name="pubYear"
-          id="pubYear"
-          value={pubYear}
-          onChange={(event) => {
-            const val = event.target.value;
-            if (val === "") {
-              setPubYear(0);
-            } else {
-              setPubYear(parseInt(val));
-            }
-          }}
-        />
+          <TextField
+            label="Publication Year"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={pubYear}
+            onChange={(event) => setPubYear(event.target.value)}
+            required
+          />
 
-        <label htmlFor="doi">DOI:</label>
-        <input
-          className={formStyles.formItem}
-          type="text"
-          name="doi"
-          id="doi"
-          value={doi}
-          onChange={(event) => {
-            setDoi(event.target.value);
-          }}
-        />
+          <TextField
+            label="SE Practice"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={sePractice}
+            onChange={(event) => setSEPractice(event.target.value)}
+            required
+          />
 
-        <label htmlFor="claim">claim:</label>
-        <textarea
-          className={formStyles.formTextArea}
-          name="claim"
-          value={claim}
-          onChange={(event) => setClaim(event.target.value)}
-        />
+          <TextField
+            select
+            label="Perspective"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={perspective}
+            onChange={(event) => setPerspective(event.target.value)}
+            required
+          >
+            <MenuItem value="">
+              <em>Select a perspective</em>
+            </MenuItem>
+            <MenuItem value="Support">Support</MenuItem>
+            <MenuItem value="Reject">Reject</MenuItem>
+          </TextField>
 
-        <button className={formStyles.formItem} type="submit">
-          Submit
-        </button>
+          <Button variant="contained" color="primary" type="submit">
+            Submit
+          </Button>
+        </Stack>
       </form>
-    </div>
+
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 };
 
-export default NewDiscussion;
+export default NewArticle;
