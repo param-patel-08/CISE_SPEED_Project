@@ -54,6 +54,20 @@ export class ArticlesController {
     return await this.articlesService.getPendingArticles();
   }
 
+  // Create multiple new articles
+  @Post('add-all')
+  async createArticles(@Body() articles: {
+    Title: string;
+    Authors: string[];
+    Source: string;
+    PubYear: string;
+    SEPractice: string;
+    Perspective: string;
+  }[]) {
+    return await this.articlesService.createArticles(articles);
+  }
+
+
   // Create a new article
   @Post()
   async createArticle(

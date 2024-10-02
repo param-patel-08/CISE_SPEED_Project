@@ -128,6 +128,27 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     return { status: 'Success', message: 'Article created successfully', details: newArticle};
   }
 
+  // Create multiple new articles
+  async createArticles(articles: {
+    Title: string;
+    Authors: string[];
+    Source: string;
+    PubYear: string;
+    SEPractice: string;
+    Perspective: string;
+  }[]) {
+    const collection = this.client.db('SPEED').collection('articles');
+    const newArticles = articles.map(article => ({
+      ...article,
+      DOE: new Date(),
+      Status: 'Pending',
+      Impressions: 0
+    }));
+    let result = await collection.insertMany(newArticles);
+    return { status: 'Success', message: 'Articles created successfully', details: result };
+  }
+
+
   async onModuleDestroy() {
     await this.client.close();
   }
