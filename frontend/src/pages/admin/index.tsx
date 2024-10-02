@@ -15,7 +15,7 @@ export default function Moderator() {
 
   useEffect(() => {
     // Fetching all approved articles for analytics
-    axios.get<Article[]>("/articles")
+    axios.get<Article[]>("/api/articles")
       .then(response => {
         const articles = response.data;
         setAnalytics(articles);
@@ -23,7 +23,7 @@ export default function Moderator() {
       .catch(error => console.error("Error fetching articles:", error));
 
     // Fetching all pending articles for moderation
-    axios.get<Article[]>("/articles/pending")
+    axios.get<Article[]>("/api/articles/pending")
       .then(response => {
         setPendingArticles(response.data);
       })
@@ -31,7 +31,7 @@ export default function Moderator() {
   }, []);
 
   const handleApproval = (id: string, status: "Approved" | "Rejected") => {
-    axios.put("/articles/article", { id, status })
+    axios.put("/api/articles/article", { id, status })
       .then(response => {
         console.log(response.data);
         // Update the pending articles list
