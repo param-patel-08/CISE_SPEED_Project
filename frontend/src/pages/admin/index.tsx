@@ -30,8 +30,9 @@ interface Article {
   PubYear?: string;
   SEPractice?: string;
   Perspective?: string;
-  Status: string; // Adding status field
-  DateOfSubmission: string; // Adding submission date field
+  Status?: string;
+  SubmissionDate?: string;
+  Summary?: string;  // Added Summary field
 }
 
 export default function Moderator() {
@@ -40,7 +41,7 @@ export default function Moderator() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<string>(""); // State for status filter
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   useEffect(() => {
     // Fetching all approved articles for analytics
@@ -97,9 +98,9 @@ export default function Moderator() {
   };
 
   // Filter articles based on selected status
-  const filteredAnalytics = selectedStatus
-    ? analytics.filter((article) => article.Status === selectedStatus)
-    : analytics;
+  const filteredArticles = selectedStatus
+    ? pendingArticles.filter((article) => article.Status === selectedStatus)
+    : pendingArticles;
 
   return (
     <Container>
@@ -107,8 +108,8 @@ export default function Moderator() {
         Moderator Page
       </Typography>
 
-      {/* Filter by Status Dropdown */}
-      <Box marginBottom={4}>
+      {/* Status Filter */}
+      <Box marginBottom={3}>
         <TextField
           select
           label="Filter by Status"
@@ -138,18 +139,14 @@ export default function Moderator() {
                 <TableCell>Title</TableCell>
                 <TableCell>Authors</TableCell>
                 <TableCell>Impressions</TableCell>
-                <TableCell>Status</TableCell> {/* Add Status Column */}
-                <TableCell>Date of Submission</TableCell> {/* Add Date Column */}
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredAnalytics.map((article) => (
+              {analytics.map((article) => (
                 <TableRow key={article._id} onClick={() => handleClick(article._id)}>
                   <TableCell>{article.Title}</TableCell>
                   <TableCell>{article.Authors.join(", ")}</TableCell>
                   <TableCell>{article.Impressions}</TableCell>
-                  <TableCell>{article.Status}</TableCell> {/* Show Status */}
-                  <TableCell>{article.DateOfSubmission}</TableCell> {/* Show Date */}
                 </TableRow>
               ))}
             </TableBody>
@@ -168,16 +165,16 @@ export default function Moderator() {
               <TableRow>
                 <TableCell>Title</TableCell>
                 <TableCell>Authors</TableCell>
+                <TableCell>Submission Date</TableCell>
                 <TableCell>Action</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Date of Submission</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {pendingArticles.map((article) => (
+              {filteredArticles.map((article) => (
                 <TableRow key={article._id} onClick={() => handleClick(article._id)}>
                   <TableCell>{article.Title}</TableCell>
                   <TableCell>{article.Authors.join(", ")}</TableCell>
+                  <TableCell>{article.SubmissionDate}</TableCell>
                   <TableCell>
                     <Button
                       variant="contained"
@@ -186,7 +183,7 @@ export default function Moderator() {
                         e.stopPropagation(); // Prevents triggering the modal on button click
                         handleApproval(article._id, "Approved");
                       }}
-                      sx={{ marginRight: 1 }}
+                      sx={{ marginRight: 1, width: "120px", height: "40px" }} // Set fixed size
                     >
                       Approve
                     </Button>
@@ -197,12 +194,11 @@ export default function Moderator() {
                         e.stopPropagation(); // Prevents triggering the modal on button click
                         handleApproval(article._id, "Rejected");
                       }}
+                      sx={{ width: "120px", height: "40px" }} // Set fixed size
                     >
                       Reject
                     </Button>
                   </TableCell>
-                  <TableCell>{article.Status}</TableCell> {/* Show Status */}
-                  <TableCell>{article.DateOfSubmission}</TableCell> {/* Show Date */}
                 </TableRow>
               ))}
             </TableBody>
@@ -238,11 +234,13 @@ export default function Moderator() {
                 <strong>Perspective:</strong> {selectedArticle.Perspective}
               </Typography>
               <Typography variant="body1">
-                <strong>Status:</strong> {selectedArticle.Status} {/* Show Status */}
+                <strong>Status:</strong> {selectedArticle.Status}
               </Typography>
               <Typography variant="body1">
-                <strong>Date of Submission:</strong> {selectedArticle.DateOfSubmission}{" "}
-                {/* Show Date */}
+                <strong>Date of Submission:</strong> {selectedArticle.SubmissionDate}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Summary:</strong> {selectedArticle.Summary} {/* Added summary */}
               </Typography>
             </Box>
           ) : (
