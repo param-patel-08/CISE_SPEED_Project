@@ -17,6 +17,8 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  TextField,
+  MenuItem,
 } from "@mui/material";
 
 interface Article {
@@ -38,6 +40,7 @@ export default function Moderator() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<string>(""); // State for status filter
 
   useEffect(() => {
     // Fetching all approved articles for analytics
@@ -93,11 +96,35 @@ export default function Moderator() {
     setSelectedArticle(null);
   };
 
+  // Filter articles based on selected status
+  const filteredAnalytics = selectedStatus
+    ? analytics.filter((article) => article.Status === selectedStatus)
+    : analytics;
+
   return (
     <Container>
       <Typography variant="h4" component="h1" gutterBottom>
         Moderator Page
       </Typography>
+
+      {/* Filter by Status Dropdown */}
+      <Box marginBottom={4}>
+        <TextField
+          select
+          label="Filter by Status"
+          variant="outlined"
+          fullWidth
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+        >
+          <MenuItem value="">
+            <em>All Statuses</em>
+          </MenuItem>
+          <MenuItem value="Pending">Pending</MenuItem>
+          <MenuItem value="Approved">Approved</MenuItem>
+          <MenuItem value="Rejected">Rejected</MenuItem>
+        </TextField>
+      </Box>
 
       {/* Analytics Section */}
       <Box marginBottom={4}>
@@ -116,7 +143,7 @@ export default function Moderator() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {analytics.map((article) => (
+              {filteredAnalytics.map((article) => (
                 <TableRow key={article._id} onClick={() => handleClick(article._id)}>
                   <TableCell>{article.Title}</TableCell>
                   <TableCell>{article.Authors.join(", ")}</TableCell>
