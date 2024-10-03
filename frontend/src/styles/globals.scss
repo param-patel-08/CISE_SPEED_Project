@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   max-width: 30em;
+  margin-top: 0; // Adjusts top margin to fill the space
+  padding-top: 2em; // Adds a little padding for breathing space
 }
 
 .formItem {
@@ -27,4 +29,17 @@
   height: 3rem;
   flex-grow: 0;
   font-size: 1.5em;
+}
+
+/* New rule to control page-wide margins and padding */
+body {
+  margin: 0;  // Eliminates default margins
+  padding: 0; // Eliminates default padding
+}
+
+.container {
+  margin: 0;
+  padding: 1em 2em; // Adjust padding to ensure content doesn't touch edges
+  width: 100%;
+  box-sizing: border-box;
 }
