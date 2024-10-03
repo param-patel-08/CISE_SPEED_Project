@@ -2,14 +2,15 @@
   display: flex;
   flex-direction: column;
   max-width: 30em;
-  margin-top: 0; // Adjusts top margin to fill the space
-  padding-top: 2em; // Adds a little padding for breathing space
+  margin-top: 0;
+  padding-top: 2em;
 }
 
 .formItem {
   padding: 1em;
   margin: 1em 0;
   flex-grow: 1;
+  font-size: 1.2em; // Adjusted font size for form items
 }
 
 .formTextArea {
@@ -31,15 +32,26 @@
   font-size: 1.5em;
 }
 
-/* New rule to control page-wide margins and padding */
+/* Global adjustments for text size */
 body {
-  margin: 0;  // Eliminates default margins
-  padding: 0; // Eliminates default padding
+  margin: 0;
+  padding: 0;
+  font-size: 1.2em;  // Increase base font size globally
+  line-height: 1.5;  // Ensures text remains readable
 }
 
 .container {
   margin: 0;
-  padding: 1em 2em; // Adjust padding to ensure content doesn't touch edges
+  padding: 1em 2em;
   width: 100%;
   box-sizing: border-box;
+  font-size: 1.2em;  // Adjust font size within the container
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 1.5em;  // Adjust heading font size
+}
+
+p, li {
+  font-size: 1.2em;  // Adjust font size for paragraphs and list items
 }
