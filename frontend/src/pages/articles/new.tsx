@@ -10,45 +10,57 @@ import {
   Snackbar,
   Alert,
   Stack,
-  MenuItem
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 
 const NewArticle = () => {
-  const [title, setTitle] = useState("");
+  const [journalname, setJournalName] = useState("");
   const [authors, setAuthors] = useState<string[]>([]);
-  const [source, setSource] = useState("");
   const [pubYear, setPubYear] = useState<string>("");
+  const [volume, setVolume] = useState("");
+  const [number, setNumber] = useState("");
+  const [pages, setPages] = useState("");
+  const [link, setLink] = useState("");
   const [sePractice, setSEPractice] = useState("");
   const [perspective, setPerspective] = useState("");
-  const [summary, setSummary] = useState(""); // New state for the summary
+  const [summary, setSummary] = useState(""); 
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" as "success" | "error" });
 
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formdata = {
-      Title: title,
+      JournalName: journalname,
       Authors: authors,
-      Source: source,
       PubYear: pubYear,
+      Volume: volume,
+      Number: number,
+      Pages: pages,
+      Link: link,
       SEPractice: sePractice,
       Perspective: perspective,
-      Summary: summary,  // Include the summary in the form submission
+      Summary: summary,
     };
 
     try {
       const response = await axios.post("/api/articles", formdata);
       console.log(response);
       setSnackbar({ open: true, message: "Article submitted successfully!", severity: "success" });
-      setTitle("");
       setAuthors([]);
-      setSource("");
+      setJournalName("");
       setPubYear("");
+      setVolume("");
+      setNumber("");
+      setPages("");
+      setLink("");
       setSEPractice("");
       setPerspective("");
-      setSummary(""); // Clear the summary after submission
+      setSummary("");
     } catch (error) {
       console.error("Error submitting article:", error);
       setSnackbar({ open: true, message: "Error submitting article. Please try again.", severity: "error" });
@@ -69,15 +81,11 @@ const NewArticle = () => {
 
   const getColorForPerspective = (value: string) => {
     switch (value) {
-      case "1":
+      case "Reject":
         return "red";
-      case "2":
-        return "orange";
-      case "3":
+      case "Neutral":
         return "#D4AC0D"; // Darker shade for better visibility
-      case "4":
-        return "lightgreen";
-      case "5":
+      case "Support":
         return "green";
       default:
         return "";
@@ -92,12 +100,12 @@ const NewArticle = () => {
       <form onSubmit={submitNewArticle}>
         <Stack spacing={2}>
           <TextField
-            label="Title"
+            label="Journal Name"
             variant="outlined"
             fullWidth
             margin="normal"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            value={journalname}
+            onChange={(event) => setJournalName(event.target.value)}
             required
           />
 
@@ -134,38 +142,76 @@ const NewArticle = () => {
           </Box>
 
           <TextField
-            label="Source"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={source}
-            onChange={(event) => setSource(event.target.value)}
-            required
-          />
-
-          <TextField
             label="Publication Year"
             variant="outlined"
             fullWidth
             margin="normal"
             value={pubYear}
             onChange={(event) => setPubYear(event.target.value)}
+            type="number"
             required
           />
 
           <TextField
-            label="SE Practice"
+            label="Volume"
             variant="outlined"
             fullWidth
             margin="normal"
-            value={sePractice}
-            onChange={(event) => setSEPractice(event.target.value)}
+            value={volume}
+            onChange={(event) => setVolume(event.target.value)}
             required
           />
 
-          {/* New TextField for Summary */}
           <TextField
-            label="Summary of SE Practice"
+            label="Number"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={number}
+            onChange={(event) => setNumber(event.target.value)}
+            required
+          />
+
+          <TextField
+            label="Pages"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={pages}
+            onChange={(event) => setPages(event.target.value)}
+            required
+          />
+
+          <TextField
+            label="Link"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={link}
+            onChange={(event) => setLink(event.target.value)}
+            required
+          />
+
+          <FormControl fullWidth margin="normal" required>
+            <InputLabel>SE Practice</InputLabel>
+            <Select
+              label="SE Practice"
+              value={sePractice}
+              onChange={(event) => setSEPractice(event.target.value)}
+            >
+              <MenuItem value="">
+                <em>Select a Methodology</em>
+              </MenuItem>
+              <MenuItem value="Agile">Agile</MenuItem>
+              <MenuItem value="TDD">Test Driven Development</MenuItem>
+              <MenuItem value="Scrum">Scrum</MenuItem>
+              <MenuItem value="DevOps">DevOps</MenuItem>
+              <MenuItem value="Mob Programming">Mob Programming</MenuItem>
+            </Select>
+          </FormControl>
+
+          <TextField
+            label="Summary"
             variant="outlined"
             fullWidth
             multiline
@@ -176,33 +222,26 @@ const NewArticle = () => {
             required
           />
 
-          {/* Dropdown for Perspective with Color Cues */}
-          <TextField
-            select
-            label="Perspective"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={perspective}
-            onChange={(event) => setPerspective(event.target.value)}
-            required
-            SelectProps={{
-              renderValue: (value) => (
+          <FormControl fullWidth margin="normal" required>
+            <InputLabel>Perspective</InputLabel>
+            <Select
+              label="Perspective"
+              value={perspective}
+              onChange={(event) => setPerspective(event.target.value)}
+              renderValue={(value) => (
                 <span style={{ color: getColorForPerspective(value) }}>
-                  {value} - {["", "Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"][Number(value)]}
+                  {value}
                 </span>
-              )
-            }}
-          >
-            <MenuItem value="">
-              <em>Select a perspective</em>
-            </MenuItem>
-            <MenuItem value="1" style={{ color: "red" }}>1 - Strongly Disagree</MenuItem>
-            <MenuItem value="2" style={{ color: "orange" }}>2 - Disagree</MenuItem>
-            <MenuItem value="3" style={{ color: "#D4AC0D" }}>3 - Neutral</MenuItem>
-            <MenuItem value="4" style={{ color: "lightgreen" }}>4 - Agree</MenuItem>
-            <MenuItem value="5" style={{ color: "green" }}>5 - Strongly Agree</MenuItem>
-          </TextField>
+              )}
+            >
+              <MenuItem value="">
+                <em>Select a perspective</em>
+              </MenuItem>
+              <MenuItem value="Reject" style={{ color: "red" }}>Reject</MenuItem>
+              <MenuItem value="Neutral" style={{ color: "#D4AC0D" }}>Neutral</MenuItem>
+              <MenuItem value="Support" style={{ color: "green" }}>Support</MenuItem>
+            </Select>
+          </FormControl>
 
           <Button variant="contained" color="primary" type="submit">
             Submit

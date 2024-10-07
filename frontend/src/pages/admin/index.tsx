@@ -12,23 +12,9 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  CircularProgress,
 } from "@mui/material";
-
-interface Article {
-  _id: string;
-  Title: string;
-  Authors: string[];
-  Impressions?: number;
-  Source?: string;
-  PubYear?: string;
-  SEPractice?: string;
-  Perspective?: string;
-}
+import ArticleDetailsModal from "../../components/articledetails/ArticleDetailsModal";
+import { Article } from "../../components/article/Article";
 
 export default function Moderator() {
   const [analytics, setAnalytics] = useState<Article[]>([]);
@@ -67,6 +53,23 @@ export default function Moderator() {
         );
       })
       .catch((error) => console.error("Error updating article status:", error));
+  };
+
+  // Function to delete article by ID
+  const handleDelete = (id: string) => {
+    axios
+      .delete(`/api/articles`, { params: { id } })
+      .then((response) => {
+        console.log(response.data);
+        // Update both lists after deletion
+        setAnalytics((prevAnalytics) =>
+          prevAnalytics.filter((article) => article._id !== id)
+        );
+        setPendingArticles((prevArticles) =>
+          prevArticles.filter((article) => article._id !== id)
+        );
+      })
+      .catch((error) => console.error("Error deleting article:", error));
   };
 
   // Function to fetch article details by ID and open the modal
@@ -109,14 +112,27 @@ export default function Moderator() {
                 <TableCell>Title</TableCell>
                 <TableCell>Authors</TableCell>
                 <TableCell>Impressions</TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {analytics.map((article) => (
                 <TableRow key={article._id} onClick={() => handleClick(article._id)}>
-                  <TableCell>{article.Title}</TableCell>
+                  <TableCell>{article.JournalName}</TableCell>
                   <TableCell>{article.Authors.join(", ")}</TableCell>
                   <TableCell>{article.Impressions}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevents triggering the modal on button click
+                        handleDelete(article._id);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -141,7 +157,7 @@ export default function Moderator() {
             <TableBody>
               {pendingArticles.map((article) => (
                 <TableRow key={article._id} onClick={() => handleClick(article._id)}>
-                  <TableCell>{article.Title}</TableCell>
+                  <TableCell>{article.JournalName}</TableCell>
                   <TableCell>{article.Authors.join(", ")}</TableCell>
                   <TableCell>
                     <Button
@@ -162,8 +178,19 @@ export default function Moderator() {
                         e.stopPropagation(); // Prevents triggering the modal on button click
                         handleApproval(article._id, "Rejected");
                       }}
+                      sx={{ marginRight: 1 }}
                     >
                       Reject
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevents triggering the modal on button click
+                        handleDelete(article._id);
+                      }}
+                    >
+                      Delete
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -174,36 +201,12 @@ export default function Moderator() {
       </Box>
 
       {/* Modal Popup for showing article details */}
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Article Details</DialogTitle>
-        <DialogContent>
-          {loading ? (
-            <CircularProgress />
-          ) : selectedArticle ? (
-            <Box>
-              <Typography variant="h6">Title: {selectedArticle.Title}</Typography>
-              <Typography variant="body1">
-                Authors: {selectedArticle.Authors.join(", ")}
-              </Typography>
-              <Typography variant="body1">Source: {selectedArticle.Source}</Typography>
-              <Typography variant="body1">Year: {selectedArticle.PubYear}</Typography>
-              <Typography variant="body1">
-                SE Practice: {selectedArticle.SEPractice}
-              </Typography>
-              <Typography variant="body1">
-                Perspective: {selectedArticle.Perspective}
-              </Typography>
-            </Box>
-          ) : (
-            <Typography variant="body1">No article details found.</Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ArticleDetailsModal
+        open={open}
+        loading={loading}
+        selectedArticle={selectedArticle}
+        onClose={handleClose}
+      />
     </Container>
   );
 }

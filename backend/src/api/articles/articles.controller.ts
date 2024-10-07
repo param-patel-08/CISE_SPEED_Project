@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Put, Body, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Param, Post, Put, Body, Query, Delete, BadRequestException, NotFoundException } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 
 @Controller('articles')
@@ -10,6 +10,15 @@ export class ArticlesController {
   async ping() {
     await this.articlesService.connect();
     return 'Pinged your deployment. You successfully connected to MongoDB!';
+  }
+
+  @Delete()
+  async deleteArticle(@Query('id') id: string) {
+    const result = await this.articlesService.deleteArticleById(id);
+    if (!result) {
+      throw new NotFoundException('Article not found');
+    }
+    return { message: 'Article deleted successfully' };
   }
 
   // Get all approved articles
@@ -39,13 +48,17 @@ export class ArticlesController {
     return await this.articlesService.updateArticleStatus(id, status);
   }
 
-  // Search for articles by query
-  @Get('search')
-  async searchArticles(@Query('query') query: string) {
-    if (!query) {
-      throw new BadRequestException("No Query Provided");
+  @Post('search')  // Changed to POST
+  async searchArticles(
+    @Body('query') query: string,  // Query string for search
+    @Body('filters') filters: {    // Optional filters in the request body
+      SEPractice?: string[];
+      Perspective?: number[];
+      AfterPubYear?: number;
+      BeforePubYear?: number;
     }
-    return await this.articlesService.searchArticles(query);
+  ) {
+    return await this.articlesService.searchArticles(query, filters);
   }
 
   // Get all pending articles
@@ -57,12 +70,17 @@ export class ArticlesController {
   // Create multiple new articles
   @Post('add-all')
   async createArticles(@Body() articles: {
-    Title: string;
-    Authors: string[];
-    Source: string;
-    PubYear: string;
-    SEPractice: string;
-    Perspective: string;
+    Title: string,
+    Authors: string[],
+    JournalName: string,
+    PubYear: number,
+    Volume: string,
+    Number: string,
+    Pages: string,
+    Link: string,
+    SEPractice: string,
+    Summary: string,
+    Perspective: string,
   }[]) {
     return await this.articlesService.createArticles(articles);
   }
@@ -71,19 +89,27 @@ export class ArticlesController {
   // Create a new article
   @Post()
   async createArticle(
-    @Body('Title') Title: string,
     @Body('Authors') Authors: string[],
-    @Body('Source') Source: string,
-    @Body('PubYear') PubYear: string,
+    @Body('JournalName') JournalName: string,
+    @Body('PubYear') PubYear: number,
+    @Body('Volume') Volume: string,
+    @Body('Number') Number: string,
+    @Body('Pages') Pages: string,
+    @Body('Link') Link: string,
     @Body('SEPractice') SEPractice: string,
+    @Body('Summary') Summary: string,
     @Body('Perspective') Perspective: string,
   ) {
     return await this.articlesService.createArticle({
-      Title,
+      JournalName,
       Authors,
-      Source,
       PubYear,
+      Volume,
+      Number,
+      Pages,
+      Link,
       SEPractice,
+      Summary,
       Perspective
     });
   }
