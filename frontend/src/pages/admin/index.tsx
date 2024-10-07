@@ -12,7 +12,15 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CircularProgress,
+  TextField,
+  MenuItem,
 } from "@mui/material";
+
 import ArticleDetailsModal from "../../components/articledetails/ArticleDetailsModal";
 import { Article } from "../../components/article/Article";
 
@@ -22,6 +30,7 @@ export default function Moderator() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   useEffect(() => {
     // Fetching all approved articles for analytics
@@ -94,11 +103,35 @@ export default function Moderator() {
     setSelectedArticle(null);
   };
 
+  // Filter articles based on selected status
+  const filteredArticles = selectedStatus
+    ? pendingArticles.filter((article) => article.Status === selectedStatus)
+    : pendingArticles;
+
   return (
     <Container>
       <Typography variant="h4" component="h1" gutterBottom>
         Moderator Page
       </Typography>
+
+      {/* Status Filter */}
+      <Box marginBottom={3}>
+        <TextField
+          select
+          label="Filter by Status"
+          variant="outlined"
+          fullWidth
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+        >
+          <MenuItem value="">
+            <em>All Statuses</em>
+          </MenuItem>
+          <MenuItem value="Pending">Pending</MenuItem>
+          <MenuItem value="Approved">Approved</MenuItem>
+          <MenuItem value="Rejected">Rejected</MenuItem>
+        </TextField>
+      </Box>
 
       {/* Analytics Section */}
       <Box marginBottom={4}>
@@ -151,14 +184,16 @@ export default function Moderator() {
               <TableRow>
                 <TableCell>Title</TableCell>
                 <TableCell>Authors</TableCell>
+                <TableCell>Submission Date</TableCell>
                 <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {pendingArticles.map((article) => (
+              {filteredArticles.map((article) => (
                 <TableRow key={article._id} onClick={() => handleClick(article._id)}>
                   <TableCell>{article.JournalName}</TableCell>
                   <TableCell>{article.Authors.join(", ")}</TableCell>
+                  <TableCell>{article.DOE}</TableCell>
                   <TableCell>
                     <Button
                       variant="contained"
@@ -167,7 +202,7 @@ export default function Moderator() {
                         e.stopPropagation(); // Prevents triggering the modal on button click
                         handleApproval(article._id, "Approved");
                       }}
-                      sx={{ marginRight: 1 }}
+                      sx={{ marginRight: 1, width: "120px", height: "40px" }} // Set fixed size
                     >
                       Approve
                     </Button>
@@ -178,7 +213,7 @@ export default function Moderator() {
                         e.stopPropagation(); // Prevents triggering the modal on button click
                         handleApproval(article._id, "Rejected");
                       }}
-                      sx={{ marginRight: 1 }}
+                      sx={{ width: "120px", height: "40px" }} // Set fixed size
                     >
                       Reject
                     </Button>
