@@ -10,5 +10,7 @@ export interface Article {
     SEPractice: string,
     Summary: string,
     Perspective: string,
-    Impressions: number
+    Impressions: number,
+    Status: string,
+    DOE: Date
 }

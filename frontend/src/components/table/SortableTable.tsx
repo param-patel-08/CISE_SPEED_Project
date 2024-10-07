@@ -44,7 +44,9 @@ const SortableTable: React.FC<SortableTableProps> = ({ data, onRowClick }) => {
     { key: "SEPractice", label: "SE Practice" },
     { key: "Summary", label: "Summary" },
     { key: "Perspective", label: "Perspective" },
-    { key: "Impressions", label: "Impressions" }
+    { key: "Impressions", label: "Impressions" },
+    { key: "DOE", label: "Date of Submission" }
+    
   ];
 
   const [sortConfig, setSortConfig] = useState<{
@@ -131,10 +133,13 @@ const SortableTable: React.FC<SortableTableProps> = ({ data, onRowClick }) => {
               <TableRow key={i} hover onClick={() => onRowClick(row)} style={{ cursor: "pointer" }}>
                 {visibleHeaders.map((key) => (
                   <TableCell key={key}>
-                    {Array.isArray(row[key])
-                      ? (row[key] as string[]).join(", ")
-                      : row[key]}
-                  </TableCell>
+                  {Array.isArray(row[key])
+                    ? (row[key] as string[]).join(", ")
+                    : row[key] instanceof Date
+                    ? (row[key] as Date).toLocaleDateString() // Format the date
+                    : row[key]}
+                </TableCell>
+                
                 ))}
               </TableRow>
             ))}

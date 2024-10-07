@@ -12,11 +12,6 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  CircularProgress,
   TextField,
   MenuItem,
 } from "@mui/material";
@@ -193,7 +188,7 @@ export default function Moderator() {
                 <TableRow key={article._id} onClick={() => handleClick(article._id)}>
                   <TableCell>{article.JournalName}</TableCell>
                   <TableCell>{article.Authors.join(", ")}</TableCell>
-                  <TableCell>{article.DOE}</TableCell>
+                  <TableCell>{String(article.DOE)}</TableCell>
                   <TableCell>
                     <Button
                       variant="contained"
