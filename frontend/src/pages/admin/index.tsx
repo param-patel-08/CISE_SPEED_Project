@@ -109,25 +109,6 @@ export default function Moderator() {
         Moderator Page
       </Typography>
 
-      {/* Status Filter */}
-      <Box marginBottom={3}>
-        <TextField
-          select
-          label="Filter by Status"
-          variant="outlined"
-          fullWidth
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-        >
-          <MenuItem value="">
-            <em>All Statuses</em>
-          </MenuItem>
-          <MenuItem value="Pending">Pending</MenuItem>
-          <MenuItem value="Approved">Approved</MenuItem>
-          <MenuItem value="Rejected">Rejected</MenuItem>
-        </TextField>
-      </Box>
-
       {/* Analytics Section */}
       <Box marginBottom={4}>
         <Typography variant="h5" component="h2" gutterBottom>
@@ -166,6 +147,25 @@ export default function Moderator() {
             </TableBody>
           </Table>
         </TableContainer>
+      </Box>
+
+      {/* Status Filter */}
+      <Box marginBottom={3}>
+        <TextField
+          select
+          label="Filter by Status"
+          variant="outlined"
+          fullWidth
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+        >
+          <MenuItem value="">
+            <em>All Statuses</em>
+          </MenuItem>
+          <MenuItem value="Pending">Pending</MenuItem>
+          <MenuItem value="Approved">Approved</MenuItem>
+          <MenuItem value="Rejected">Rejected</MenuItem>
+        </TextField>
       </Box>
 
       {/* Moderate Articles Section */}
