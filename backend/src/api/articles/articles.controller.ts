@@ -67,7 +67,6 @@ export class ArticlesController {
     return await this.articlesService.createArticles(articles);
   }
 
-
   // Create a new article
   @Post()
   async createArticle(
