@@ -31,7 +31,7 @@ export default function Home() {
                   <Typography variant="h5" component="h2" gutterBottom>
                     Extensive Research Articles
                   </Typography>
-                  <Typography variant="body1" align="center" color="textSecondary">
+                  <Typography variant="body1" align="left" color="textSecondary">
                     SPEED compiles research from published academic papers, providing practitioners with insights
                     into software engineering practices, including Test-Driven Development, Agile, and Mob Programming.
                   </Typography>
@@ -46,7 +46,7 @@ export default function Home() {
                   <Typography variant="h5" component="h2" gutterBottom>
                     Evidence-Based Decision Making
                   </Typography>
-                  <Typography variant="body1" align="center" color="textSecondary">
+                  <Typography variant="body1" align="left" color="textSecondary">
                     By summarizing empirical evidence, SPEED helps software engineers determine which practices are most
                     effective, ensuring decisions are based on data rather than anecdotal experience.
                   </Typography>
@@ -61,7 +61,7 @@ export default function Home() {
                   <Typography variant="h5" component="h2" gutterBottom>
                     Simplified Access
                   </Typography>
-                  <Typography variant="body1" align="center" color="textSecondary">
+                  <Typography variant="body1" align="left" color="textSecondary">
                     Search and filter the database to quickly find the empirical studies that support or reject claims,
                     simplifying access to peer-reviewed research.
                   </Typography>
