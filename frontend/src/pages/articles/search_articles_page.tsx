@@ -289,7 +289,7 @@ const NewArticle = () => {
             }}
           >
             <MenuItem value="">
-              <em>Select Columns</em>
+              <em>Select thiugs</em>
             </MenuItem>
             <MenuItem value="Journal Name">Journal Name</MenuItem>
             <MenuItem value="Authors">Authors</MenuItem>
