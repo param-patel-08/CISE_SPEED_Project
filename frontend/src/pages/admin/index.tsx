@@ -138,6 +138,7 @@ export default function Moderator() {
                         e.stopPropagation(); // Prevents triggering the modal on button click
                         handleDelete(article._id);
                       }}
+                      sx={{ width: "120px", height: "40px" }} // Set fixed size for alignment
                     >
                       Delete
                     </Button>
@@ -197,7 +198,7 @@ export default function Moderator() {
                         e.stopPropagation(); // Prevents triggering the modal on button click
                         handleApproval(article._id, "Approved");
                       }}
-                      sx={{ marginRight: 1, width: "120px", height: "40px" }} // Set fixed size
+                      sx={{ marginRight: 1, width: "120px", height: "40px" }} // Fixed size for consistency
                     >
                       Approve
                     </Button>
@@ -208,7 +209,7 @@ export default function Moderator() {
                         e.stopPropagation(); // Prevents triggering the modal on button click
                         handleApproval(article._id, "Rejected");
                       }}
-                      sx={{ width: "120px", height: "40px" }} // Set fixed size
+                      sx={{ marginRight: 1, width: "120px", height: "40px" }} // Fixed size for consistency
                     >
                       Reject
                     </Button>
@@ -219,6 +220,7 @@ export default function Moderator() {
                         e.stopPropagation(); // Prevents triggering the modal on button click
                         handleDelete(article._id);
                       }}
+                      sx={{ width: "120px", height: "40px" }} // Ensure consistent sizing
                     >
                       Delete
                     </Button>
