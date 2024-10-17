@@ -1,11 +1,18 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, OnModuleDestroy, OnModuleInit, NotFoundException, BadRequestException } from '@nestjs/common';
 import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
+
+export enum Users {
+  Analyst = 'Analysis',
+  Moderator = 'Moderation'
+}
 
 @Injectable()
 export class ArticlesService implements OnModuleDestroy, OnModuleInit {
   private client: MongoClient;
+  
 
-  constructor() {
+  constructor(private readonly mailService: MailerService) {
     const uri = process.env.DBCONNECTIONSTRING;
     this.client = new MongoClient(uri, {
       serverApi: {
@@ -13,11 +20,58 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
         strict: true,
         deprecationErrors: true,
       },
-    });
+    })
+    ;
   }
   async onModuleInit() {
     await this.connect()
   }
+
+  sendMail(article: {
+    JournalName: string,
+    Authors: string[],
+    PubYear: number,
+    Pages: string,
+    SEPractice: string,
+    Summary: string,
+    Perspective: string,
+  }, user: Users) {
+    const message = `
+        <p>Another publication is ready for <strong>${user}</strong>.</p>
+        <p>Please review the following key details:</p>
+
+        <ul>
+            <li><strong>Journal Name:</strong> ${article.JournalName}</li>
+            <li><strong>Authors:</strong> ${article.Authors.join(', ')}</li>
+            <li><strong>Published Year:</strong> ${article.PubYear}</li>
+            <li><strong>Pages:</strong> ${article.Pages}</li>
+            <li><strong>SE Practice:</strong> ${article.SEPractice}</li>
+            <li><strong>Summary:</strong> ${article.Summary}</li>
+            <li><strong>Perspective:</strong> ${article.Perspective}</li>
+        </ul>
+
+        <p>Regards,</p>
+        <p><strong>Speed @ AUT</strong></p>
+    `;
+    
+    let recipient: string;
+
+    switch(user)
+    {
+        case Users.Analyst:
+            recipient = "wvz8937@autuni.ac.nz"
+        case Users.Moderator:
+            recipient = "tasmankeenan03@gmail.com"
+    }
+  
+    this.mailService.sendMail({
+        from: 'ada88@ethereal.email',
+        to: recipient,
+        subject: `Another Publication is ready for your review`,
+        html: message,
+        });
+    console.log("email sent")  
+}
 
   async connect() {
     await this.client.connect();
@@ -53,13 +107,25 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
 
     return result;
   }
+
+  async getShortlistedArticles() {
+    const collection = this.client.db('SPEED').collection('articles');
+
+    try {
+      const shortlistedArticles = await collection.find({ Status: 'Shortlisted' }).toArray();
+      return shortlistedArticles;
+    } catch (error) {
+      throw new Error('Could not retrieve shortlisted articles');
+    }
+  }
+
   // Approve or reject an article
-  async updateArticleStatus(id: string, status: 'Approved' | 'Rejected') {
+  async updateArticleStatus(id: string, status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending') {
 
     // Enforce runtime validation for the status
-    const validStatuses = ['Approved', 'Rejected'];
+    const validStatuses = ['Approved', 'Rejected', 'Shortlisted', 'Pending'];
     if (!validStatuses.includes(status)) {
-      throw new BadRequestException("Invalid status. Must be 'Approved' or 'Rejected'.");
+      throw new BadRequestException("Invalid status. Must be 'Approved', 'Rejected', 'Shortlisted', or 'Pending'.");
     }
 
     const collection = this.client.db('SPEED').collection('articles');
@@ -168,15 +234,22 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     Summary: string,
     Perspective: string,
   }) {
-    const collection = this.client.db('SPEED').collection('articles');
-    let newArticle = await collection.insertOne({
+
+    let articleToBeInserted = {
       ...article,
       DOE: new Date(),
       Status: 'Pending',
       Impressions: 0
-    });
+    }
+    const collection = this.client.db('SPEED').collection('articles');
+    let newArticle = await collection.insertOne(articleToBeInserted);
+    
+    this.sendMail(articleToBeInserted, Users.Moderator);
+
     return { status: 'Success', message: 'Article created successfully', details: newArticle };
   }
+
+  
 
   // Create multiple new articles
   async createArticles(articles: {

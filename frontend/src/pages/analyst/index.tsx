@@ -53,7 +53,7 @@ const SercAnalyst: React.FC = () => {
 
   // Fetch the list of articles from an API when the component is mounted
   useEffect(() => {
-    axios.get<Article[]>("/api/articles") // Replace with your API endpoint
+    axios.get<Article[]>("/api/articles/shortlisted") // Replace with your API endpoint
       .then(response => {
         setArticles(response.data); // Store the fetched articles in the state
         console.log("\n Response.Data:\n", response.data, "\n"); // Log the response data for debugging
@@ -186,7 +186,6 @@ const SercAnalyst: React.FC = () => {
                 label="Evidence Result"
                 value={evidenceResult}
                 onChange={(e) => setEvidenceResult(e.target.value)}
-                margin="normal"
               >
                 {/* Dropdown options for evidence results */}
                 <MenuItem value="Supports">Supports</MenuItem>
