@@ -1,4 +1,4 @@
-// pages/serc-analyst.tsx
+// Import necessary dependencies and components from React and MUI
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { 
@@ -19,6 +19,7 @@ import {
   MenuItem 
 } from "@mui/material";
 
+// Define the structure of the Article interface for type safety
 interface Article {
   _id: string;
   JournalName: string;
@@ -35,11 +36,14 @@ interface Article {
   Impressions: number;
 }
 
+// Main functional component for the SERC Analyst page
 const SercAnalyst: React.FC = () => {
+  // State variables to manage the list of articles and the selected article for modal interaction
   const [articles, setArticles] = useState<Article[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [isExtractModalOpen, setIsExtractModalOpen] = useState(false);
 
+  // State variables for the form input fields in the modal
   const [sePractice, setSePractice] = useState("");
   const [claim, setClaim] = useState("");
   const [evidenceResult, setEvidenceResult] = useState("");
@@ -47,26 +51,30 @@ const SercAnalyst: React.FC = () => {
   const [participants, setParticipants] = useState("");
   const [outcomeData, setOutcomeData] = useState("");
 
+  // Fetch the list of articles from an API when the component is mounted
   useEffect(() => {
-    //fetch articles using API for analysis
-    axios.get<Article[]>("/api/articles")
+    axios.get<Article[]>("/api/articles") // Replace with your API endpoint
       .then(response => {
-        setArticles(response.data);
-        console.log("\n Response.Data:\n", response.data, "\n");
+        setArticles(response.data); // Store the fetched articles in the state
+        console.log("\n Response.Data:\n", response.data, "\n"); // Log the response data for debugging
       })
-      .catch(error => console.error("Error fetching articles:", error));
-  }, []);
+      .catch(error => console.error("Error fetching articles:", error)); // Handle errors if fetching fails
+  }, []); // Empty dependency array ensures this runs only on component mount
 
+  // Function to open the modal for extracting information from a specific article
   const openExtractModal = (article: Article) => {
-    setSelectedArticle(article);
-    setIsExtractModalOpen(true);
+    setSelectedArticle(article); // Set the currently selected article
+    setIsExtractModalOpen(true); // Open the modal
   };
 
+  // Function to close the extraction modal
   const closeExtractModal = () => {
-    setIsExtractModalOpen(false);
+    setIsExtractModalOpen(false); // Close the modal
   };
 
+  // Function to handle the submission of extracted information
   const handleExtractRelevantInfo = () => {
+    // Log the extracted information from the form fields
     console.log("Extracting Relevant Info...");
     console.log("SE Practice:", sePractice);
     console.log("Claim:", claim);
@@ -75,19 +83,22 @@ const SercAnalyst: React.FC = () => {
     console.log("Participants:", participants);
     console.log("Outcome Data:", outcomeData);
     
-    closeExtractModal();
+    closeExtractModal(); // Close the modal after submission
   };
 
   return (
     <Container>
+      {/* Page title */}
       <Typography variant="h4" component="h1" gutterBottom>
         SERC Analyst Page
       </Typography>
 
+      {/* Section for listing articles */}
       <Box marginBottom={4}>
         <Typography variant="h5" component="h2" gutterBottom>
           Articles for Review
         </Typography>
+        {/* Table to display the list of articles */}
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -103,10 +114,12 @@ const SercAnalyst: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
+              {/* Render each article row */}
               {articles.map((article) => (
                 <TableRow key={article._id}>
                   <TableCell>{article.JournalName}</TableCell>
                   <TableCell>
+                    {/* Check if authors are available, otherwise show a fallback */}
                     {article.Authors?.length ? article.Authors.join(", ") : "No authors available"}
                   </TableCell>
                   <TableCell>{article.PubYear}</TableCell>
@@ -115,6 +128,7 @@ const SercAnalyst: React.FC = () => {
                   <TableCell>{article.Perspective}</TableCell>
                   <TableCell>{article.Impressions}</TableCell>
                   <TableCell>
+                    {/* Button to open the extraction modal */}
                     <Button
                       variant="contained"
                       color="primary"
@@ -130,15 +144,19 @@ const SercAnalyst: React.FC = () => {
         </TableContainer>
       </Box>
 
+      {/* Modal to display article details and input fields for extracting information */}
       {selectedArticle && (
         <Modal open={isExtractModalOpen} onClose={closeExtractModal}>
-          <Box display="flex" flexDirection="row" style={{ margin: '50px auto', width: '80%', backgroundColor: 'white', padding: '20px', borderRadius: '10px' }}>
-            
-            {/*article metadata and web viewer modal */}
+          <Box 
+            display="flex" 
+            flexDirection="row" 
+            style={{ margin: '50px auto', width: '80%', backgroundColor: 'white', padding: '20px', borderRadius: '10px' }}
+          >
+            {/* Article metadata and web viewer in the modal */}
             <Box width="50%" padding="16px">
               <Typography variant="h6">Article Viewer</Typography>
               <iframe
-                src={selectedArticle.Link}
+                src={selectedArticle.Link} // Display the article in an iframe
                 width="100%"
                 height="600px"
                 style={{ border: "1px solid black" }}
@@ -146,7 +164,7 @@ const SercAnalyst: React.FC = () => {
               />
             </Box>
             
-            {/* extraction modal */}
+            {/* Extraction form fields */}
             <Box width="50%" padding="16px">
               <Typography variant="h6">Extract Relevant Info</Typography>
               <TextField 
@@ -170,6 +188,7 @@ const SercAnalyst: React.FC = () => {
                 onChange={(e) => setEvidenceResult(e.target.value)}
                 margin="normal"
               >
+                {/* Dropdown options for evidence results */}
                 <MenuItem value="Supports">Supports</MenuItem>
                 <MenuItem value="Contradicts">Contradicts</MenuItem>
               </Select>
@@ -196,6 +215,7 @@ const SercAnalyst: React.FC = () => {
                 rows={4} 
                 margin="normal" 
               />
+              {/* Submit button for extracted information */}
               <Button
                 variant="contained"
                 color="primary"
