@@ -26,7 +26,6 @@ const NewArticle = () => {
   const [sePractice, setSEPractice] = useState("");
   const [perspective, setPerspective] = useState("");
   const [summary, setSummary] = useState(""); 
-  const [selectedColumns, setSelectedColumns] = useState(""); // For Select Columns dropdown
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" as "success" | "error" });
 
   // Form submission handler
