@@ -274,28 +274,7 @@ const NewArticle = () => {
             <MenuItem value="Support" style={{ color: "green" }}>Support</MenuItem>
           </TextField>
 
-          {/* Select Columns Dropdown */}
-          <TextField
-            label="Select Columns"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            select
-            value={selectedColumns}
-            onChange={(event) => setSelectedColumns(event.target.value)}
-            SelectProps={{
-              displayEmpty: true,
-              renderValue: selectedColumns !== "" ? undefined : () => <em>Select Columns</em>
-            }}
-          >
-            <MenuItem value="">
-              <em>Select thiugs</em>
-            </MenuItem>
-            <MenuItem value="Journal Name">Journal Name</MenuItem>
-            <MenuItem value="Authors">Authors</MenuItem>
-            <MenuItem value="Publication Year">Publication Year</MenuItem>
-            <MenuItem value="Impressions">Impressions</MenuItem>
-          </TextField>
+          
 
           <Button variant="contained" color="primary" type="submit">
             Submit

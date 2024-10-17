@@ -1,6 +1,8 @@
 import { Controller, Get, Param, Post, Put, Body, Query, Delete, BadRequestException, NotFoundException } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 
+
+
 @Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
@@ -42,10 +44,15 @@ export class ArticlesController {
   @Put('article')
   async updateArticleStatus(
     @Body('id') id: string,
-    @Body('status') status: 'Approved' | 'Rejected'
+    @Body('status') status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending',
   ) {
+    let validstatuses = ['Approved', 'Rejected', 'Shortlisted','Pending'];
+
+    if (validstatuses.includes(status))
+    {
+      return await this.articlesService.updateArticleStatus(id, status);
+    }
     
-    return await this.articlesService.updateArticleStatus(id, status);
   }
 
   @Post('search')  // Changed to POST
@@ -67,10 +74,14 @@ export class ArticlesController {
     return await this.articlesService.getPendingArticles();
   }
 
+  @Get('shortlisted')
+  async getShortlistedArticles() {
+    return await this.articlesService.getShortlistedArticles();
+  }
+
   // Create multiple new articles
   @Post('add-all')
   async createArticles(@Body() articles: {
-    Title: string,
     Authors: string[],
     JournalName: string,
     PubYear: number,

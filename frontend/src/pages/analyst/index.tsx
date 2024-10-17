@@ -49,7 +49,7 @@ const SercAnalyst: React.FC = () => {
 
   useEffect(() => {
     //fetch articles using API for analysis
-    axios.get<Article[]>("/api/articles")
+    axios.get<Article[]>("/api/articles/shortlisted")
       .then(response => {
         setArticles(response.data);
         console.log("\n Response.Data:\n", response.data, "\n");
