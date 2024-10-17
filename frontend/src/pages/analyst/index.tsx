@@ -67,13 +67,14 @@ const SercAnalyst: React.FC = () => {
   };
 
   const handleExtractRelevantInfo = () => {
-    //to be completed 
+    console.log("Extracting Relevant Info...");
     console.log("SE Practice:", sePractice);
     console.log("Claim:", claim);
     console.log("Evidence Result:", evidenceResult);
     console.log("Research Type:", researchType);
     console.log("Participants:", participants);
     console.log("Outcome Data:", outcomeData);
+    
     closeExtractModal();
   };
 
