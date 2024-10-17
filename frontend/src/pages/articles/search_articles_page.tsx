@@ -1,3 +1,4 @@
+// Import necessary dependencies and components
 import React, { FormEvent, useState } from "react";
 import axios from "axios";
 import { 
@@ -15,7 +16,9 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 
+// Functional component for creating a new article
 const NewArticle = () => {
+  // State variables to manage form inputs and UI feedback
   const [journalname, setJournalName] = useState("");
   const [authors, setAuthors] = useState<string[]>([]);
   const [pubYear, setPubYear] = useState<string>("");
@@ -31,8 +34,9 @@ const NewArticle = () => {
 
   // Form submission handler
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault(); // Prevent default form submission behavior
 
+    // Collect form data into an object
     const formdata = {
       JournalName: journalname,
       Authors: authors,
@@ -47,9 +51,14 @@ const NewArticle = () => {
     };
 
     try {
+      // Send a POST request to the server to create a new article
       const response = await axios.post("/api/articles", formdata);
       console.log(response);
+
+      // Show success message using Snackbar
       setSnackbar({ open: true, message: "Article submitted successfully!", severity: "success" });
+
+      // Reset form fields after successful submission
       setAuthors([]);
       setJournalName("");
       setPubYear("");
@@ -61,24 +70,28 @@ const NewArticle = () => {
       setPerspective("");
       setSummary("");
     } catch (error) {
+      // Log the error and show an error message using Snackbar
       console.error("Error submitting article:", error);
       setSnackbar({ open: true, message: "Error submitting article. Please try again.", severity: "error" });
     }
   };
 
+  // Function to add a new author input field
   const addAuthor = () => {
     setAuthors([...authors, ""]);
   };
 
+  // Function to remove an author input field at a specific index
   const removeAuthor = (index: number) => {
     setAuthors(authors.filter((_, i) => i !== index));
   };
 
+  // Function to update the author name at a specific index
   const changeAuthor = (index: number, value: string) => {
     setAuthors(authors.map((oldValue, i) => (index === i ? value : oldValue)));
   };
 
-  // Function to dynamically set color for the Perspective dropdown
+  // Function to dynamically set the text color for the Perspective dropdown options
   const getColorForPerspective = (value: string) => {
     switch (value) {
       case "Reject":
@@ -94,15 +107,16 @@ const NewArticle = () => {
 
   return (
     <Container>
+      {/* Page title */}
       <Typography variant="h4" gutterBottom>
         New Article
       </Typography>
 
-      {/* Article form */}
+      {/* Article submission form */}
       <form onSubmit={submitNewArticle}>
         <Stack spacing={2}>
           
-          {/* Journal Name Input */}
+          {/* Journal Name Input Field */}
           <TextField
             label="Journal Name"
             variant="outlined"
@@ -113,10 +127,11 @@ const NewArticle = () => {
             required
           />
 
-          {/* Author Section */}
+          {/* Authors Section */}
           <Typography variant="h6" gutterBottom>
             Authors
           </Typography>
+          {/* Dynamically render input fields for each author */}
           {authors.map((author, index) => (
             <Stack direction="row" spacing={1} key={`author ${index}`} alignItems="center">
               <TextField
@@ -127,6 +142,7 @@ const NewArticle = () => {
                 onChange={(event) => changeAuthor(index, event.target.value)}
                 required
               />
+              {/* Button to remove an author input field */}
               <IconButton
                 onClick={() => removeAuthor(index)}
                 color="error"
@@ -136,6 +152,7 @@ const NewArticle = () => {
               </IconButton>
             </Stack>
           ))}
+          {/* Button to add a new author input field */}
           <Box mt={1}>
             <IconButton
               onClick={addAuthor}
@@ -146,7 +163,7 @@ const NewArticle = () => {
             </IconButton>
           </Box>
 
-          {/* Publication Year Input */}
+          {/* Publication Year Input Field */}
           <TextField
             label="Publication Year"
             variant="outlined"
@@ -158,7 +175,7 @@ const NewArticle = () => {
             required
           />
 
-          {/* Volume Input */}
+          {/* Volume Input Field */}
           <TextField
             label="Volume"
             variant="outlined"
@@ -169,7 +186,7 @@ const NewArticle = () => {
             required
           />
 
-          {/* Number Input */}
+          {/* Number Input Field */}
           <TextField
             label="Number"
             variant="outlined"
@@ -180,7 +197,7 @@ const NewArticle = () => {
             required
           />
 
-          {/* Pages Input */}
+          {/* Pages Input Field */}
           <TextField
             label="Pages"
             variant="outlined"
@@ -191,7 +208,7 @@ const NewArticle = () => {
             required
           />
 
-          {/* Link Input */}
+          {/* Link Input Field */}
           <TextField
             label="Link"
             variant="outlined"
@@ -208,7 +225,7 @@ const NewArticle = () => {
             variant="outlined"
             fullWidth
             margin="normal"
-            select  // Enable dropdown behavior
+            select  // Enables dropdown functionality
             value={sePractice}
             onChange={(event) => setSEPractice(event.target.value)}
             required
@@ -216,18 +233,20 @@ const NewArticle = () => {
               MenuProps: {
                 PaperProps: {
                   style: {
-                    maxHeight: 200,
+                    maxHeight: 200, // Limits the height of the dropdown menu
                     overflowY: 'auto',
                   }
                 }
               },
-              displayEmpty: true,  // Keeps label in place when no value is selected
+              displayEmpty: true,  // Keeps the label when no value is selected
               renderValue: sePractice !== "" ? undefined : () => <em>Select SE Practice</em>
             }}
           >
+            {/* Default option */}
             <MenuItem value="">
               <em>Select SE Practice</em>
             </MenuItem>
+            {/* Dropdown options */}
             <MenuItem value="Agile">Agile</MenuItem>
             <MenuItem value="TDD">Test Driven Development</MenuItem>
             <MenuItem value="Scrum">Scrum</MenuItem>
@@ -235,7 +254,7 @@ const NewArticle = () => {
             <MenuItem value="Mob Programming">Mob Programming</MenuItem>
           </TextField>
 
-          {/* Summary Input */}
+          {/* Summary Input Field */}
           <TextField
             label="Summary"
             variant="outlined"
@@ -263,18 +282,20 @@ const NewArticle = () => {
               renderValue: perspective !== "" ? undefined : () => <em>Select Perspective</em>
             }}
             InputProps={{
-              style: { color: getColorForPerspective(perspective) }
+              style: { color: getColorForPerspective(perspective) } // Dynamically change text color based on selected value
             }}
           >
+            {/* Default option */}
             <MenuItem value="">
               <em>Select Perspective</em>
             </MenuItem>
+            {/* Dropdown options with color styles */}
             <MenuItem value="Reject" style={{ color: "red" }}>Reject</MenuItem>
             <MenuItem value="Neutral" style={{ color: "#D4AC0D" }}>Neutral</MenuItem>
             <MenuItem value="Support" style={{ color: "green" }}>Support</MenuItem>
           </TextField>
 
-          {/* Select Columns Dropdown */}
+          {/* Select Columns Dropdown (purpose unclear without additional context) */}
           <TextField
             label="Select Columns"
             variant="outlined"
@@ -288,21 +309,25 @@ const NewArticle = () => {
               renderValue: selectedColumns !== "" ? undefined : () => <em>Select Columns</em>
             }}
           >
+            {/* Default option */}
             <MenuItem value="">
-              <em>Select thiugs</em>
+              <em>Select thiugs</em> {/* Note: "Select thiugs" might be a typo */}
             </MenuItem>
+            {/* Dropdown options */}
             <MenuItem value="Journal Name">Journal Name</MenuItem>
             <MenuItem value="Authors">Authors</MenuItem>
             <MenuItem value="Publication Year">Publication Year</MenuItem>
             <MenuItem value="Impressions">Impressions</MenuItem>
           </TextField>
 
+          {/* Submit Button */}
           <Button variant="contained" color="primary" type="submit">
             Submit
           </Button>
         </Stack>
       </form>
 
+      {/* Snackbar for displaying success or error messages */}
       <Snackbar 
         open={snackbar.open} 
         autoHideDuration={6000} 
