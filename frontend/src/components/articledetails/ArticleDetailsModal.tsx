@@ -1,3 +1,4 @@
+// Import necessary dependencies from React and Material UI
 import React from "react";
 import {
   Box,
@@ -9,28 +10,37 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
-import { Article } from "../article/Article";
+import { Article } from "../article/Article"; // Import the Article interface for type safety
 
+// Define the props type for the ArticleDetailsModal component
 interface ArticleDetailsModalProps {
-  open: boolean;
-  loading: boolean;
-  selectedArticle: Article | null;
-  onClose: () => void;
+  open: boolean; // Controls whether the modal is open or closed
+  loading: boolean; // Indicates whether the data is still loading
+  selectedArticle: Article | null; // The article to be displayed (or null if no article is selected)
+  onClose: () => void; // Function to handle closing the modal
 }
 
+// Functional component to display article details in a modal
 const ArticleDetailsModal: React.FC<ArticleDetailsModalProps> = ({
-  open,
-  loading,
-  selectedArticle,
-  onClose,
+  open, // Whether the modal is open
+  loading, // Whether the article details are loading
+  selectedArticle, // The selected article object (if available)
+  onClose, // Function to close the modal
 }) => {
   return (
+    // Material UI Dialog component to show the modal
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      
+      {/* Modal Title */}
       <DialogTitle>Article Details</DialogTitle>
+
+      {/* Modal Content */}
       <DialogContent>
         {loading ? (
+          // If loading is true, show a CircularProgress loader
           <CircularProgress />
         ) : selectedArticle ? (
+          // If an article is selected, display its details
           <Box>
             <Typography variant="h6">Journal Name: {selectedArticle.JournalName}</Typography>
             <Typography variant="body1">
@@ -40,7 +50,10 @@ const ArticleDetailsModal: React.FC<ArticleDetailsModalProps> = ({
             <Typography variant="body1">Volume: {selectedArticle.Volume}</Typography>
             <Typography variant="body1">Number: {selectedArticle.Number}</Typography>
             <Typography variant="body1">Pages: {selectedArticle.Pages}</Typography>
-            <Typography variant="body1">Link: <a href={selectedArticle.Link}>{selectedArticle.Link}</a></Typography>
+            {/* Link to the article */}
+            <Typography variant="body1">
+              Link: <a href={selectedArticle.Link}>{selectedArticle.Link}</a>
+            </Typography>
             <Typography variant="body1">
               SE Practice: {selectedArticle.SEPractice}
             </Typography>
@@ -52,10 +65,14 @@ const ArticleDetailsModal: React.FC<ArticleDetailsModalProps> = ({
             </Typography>
           </Box>
         ) : (
+          // If no article is selected, show a message
           <Typography variant="body1">No article details found.</Typography>
         )}
       </DialogContent>
+
+      {/* Modal Actions */}
       <DialogActions>
+        {/* Close button to close the modal */}
         <Button onClick={onClose} color="primary">
           Close
         </Button>
@@ -64,4 +81,5 @@ const ArticleDetailsModal: React.FC<ArticleDetailsModalProps> = ({
   );
 };
 
+// Export the ArticleDetailsModal component as the default export
 export default ArticleDetailsModal;
