@@ -11,6 +11,14 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Article } from "../article/Article"; // Import the Article interface for type safety
+import axios from "axios";
+
+function onReport(selectedArticle: Article | null) {
+  if (selectedArticle)
+  {
+    axios.post(`/api/articles/report/${selectedArticle._id}`);
+  }
+}
 
 // Define the props type for the ArticleDetailsModal component
 interface ArticleDetailsModalProps {
@@ -62,8 +70,8 @@ const ArticleDetailsModal: React.FC<ArticleDetailsModalProps> = ({
             </Typography>
             <Typography variant="body1">
               Perspective: {selectedArticle.Perspective}
-            </Typography>
-          </Box>
+            </Typography>  
+          </Box>  
         ) : (
           // If no article is selected, show a message
           <Typography variant="body1">No article details found.</Typography>
@@ -75,6 +83,9 @@ const ArticleDetailsModal: React.FC<ArticleDetailsModalProps> = ({
         {/* Close button to close the modal */}
         <Button onClick={onClose} color="primary">
           Close
+        </Button>
+        <Button onClick={() => onReport(selectedArticle)} color="secondary">
+          Report
         </Button>
       </DialogActions>
     </Dialog>
