@@ -211,18 +211,6 @@ const NewArticle = () => {
             value={sePractice}
             onChange={(event) => setSEPractice(event.target.value)}
             required
-            SelectProps={{
-              MenuProps: {
-                PaperProps: {
-                  style: {
-                    maxHeight: 200,
-                    overflowY: 'auto',
-                  }
-                }
-              },
-              displayEmpty: true,  // Keeps label in place when no value is selected
-              renderValue: sePractice !== "" ? undefined : () => <em>Select SE Practice</em>
-            }}
           >
             <MenuItem value="">
               <em>Select SE Practice</em>
@@ -257,13 +245,6 @@ const NewArticle = () => {
             value={perspective}
             onChange={(event) => setPerspective(event.target.value)}
             required
-            SelectProps={{
-              displayEmpty: true,
-              renderValue: perspective !== "" ? undefined : () => <em>Select Perspective</em>
-            }}
-            InputProps={{
-              style: { color: getColorForPerspective(perspective) }
-            }}
           >
             <MenuItem value="">
               <em>Select Perspective</em>
