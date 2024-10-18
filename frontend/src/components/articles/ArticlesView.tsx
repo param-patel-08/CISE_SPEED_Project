@@ -33,7 +33,7 @@ const ArticlesView = () => {
   const [BeforePubYear, setBeforePubYear] = useState<number | undefined>(undefined);
 
   // Function to fetch articles, optionally by query and filters
-  const fetchArticles = async (query: string = '', filters: any = {}) => {
+  const fetchArticles = async (query: string, filters: { SEPractice?: string[], Perspective?: number[], AfterPubYear?: number, BeforePubYear?: number }) => {
     setLoading(true);
     setError('');
     try {
@@ -49,7 +49,7 @@ const ArticlesView = () => {
 
   // Fetch all articles on page load using useEffect
   useEffect(() => {
-    fetchArticles();
+    fetchArticles('', {});
   }, []); // Empty dependency array to run only on component mount
 
   // Handle the search function with filters
@@ -58,17 +58,17 @@ const ArticlesView = () => {
     fetchArticles(searchQuery, filters);
   };
 
-  // Handle SEPractice selection toggle
-  const handleSEPracticeChange = (event: any) => {
-    const value = event.target.value as string[];
+  const handleSEPracticeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = Array.from(event.target.selectedOptions, (option) => option.value);
     setSEPractice(value);
   };
 
   // Handle Perspective selection toggle
-  const handlePerspectiveChange = (event: any) => {
-    const value = event.target.value as number[];
+  const handlePerspectiveChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = Array.from(event.target.selectedOptions, (option) => Number(option.value));
     setPerspective(value);
   };
+  
 
   // Function to open the modal with the selected article details
   const handleClickArticle = (article: Article) => {
