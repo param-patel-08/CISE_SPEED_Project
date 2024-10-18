@@ -128,9 +128,9 @@ const ArticlesView = () => {
               renderValue={(selected) => selected.join(', ')}
             >
               {/* Add your available Perspectives */}
-              <MenuItem value={0}>Reject</MenuItem>
-              <MenuItem value={1}>Neutral</MenuItem>
-              <MenuItem value={2}>Support</MenuItem>
+              <MenuItem value={"Reject"}>Reject</MenuItem>
+              <MenuItem value={"Neutral"}>Neutral</MenuItem>
+              <MenuItem value={"Support"}>Support</MenuItem>
             </Select>
           </FormControl>
 
