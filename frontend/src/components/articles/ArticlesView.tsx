@@ -13,6 +13,7 @@ import {
   Select,
   InputLabel,
   FormControl,
+  SelectChangeEvent,
 } from '@mui/material';
 import SortableTable from '../table/SortableTable'; // Import SortableTable component
 import ArticleDetailsModal from '../articledetails/ArticleDetailsModal'; // Import ArticleDetailsModal
@@ -58,17 +59,17 @@ const ArticlesView = () => {
     fetchArticles(searchQuery, filters);
   };
 
-  const handleSEPracticeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = Array.from(event.target.selectedOptions, (option) => option.value);
+  // Update type to SelectChangeEvent
+  const handleSEPracticeChange = (event: SelectChangeEvent<string[]>) => {
+    const value = event.target.value as string[];
     setSEPractice(value);
   };
 
-  // Handle Perspective selection toggle
-  const handlePerspectiveChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = Array.from(event.target.selectedOptions, (option) => Number(option.value));
-    setPerspective(value);
-  };
-  
+  // Update type to SelectChangeEvent
+  const handlePerspectiveChange = (event: SelectChangeEvent<number[]>) => {
+      const value = event.target.value as number[];
+      setPerspective(value);
+    };
 
   // Function to open the modal with the selected article details
   const handleClickArticle = (article: Article) => {
@@ -127,11 +128,9 @@ const ArticlesView = () => {
               renderValue={(selected) => selected.join(', ')}
             >
               {/* Add your available Perspectives */}
-              
-              <MenuItem value={"Reject"}>Reject</MenuItem>
-              <MenuItem value={"Neutral"}>Neutral</MenuItem>
-              <MenuItem value={"Support"}>Support</MenuItem>
-              
+              <MenuItem value={0}>Reject</MenuItem>
+              <MenuItem value={1}>Neutral</MenuItem>
+              <MenuItem value={2}>Support</MenuItem>
             </Select>
           </FormControl>
 
