@@ -1,10 +1,23 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 
-export default function SubmissionForm() {
-  const { register, handleSubmit } = useForm();
+// Define the type for the form data
+interface SubmissionFormData {
+  title: string;
+  authors: string;
+  source: string;
+  pubyear: string;
+  doi: string;
+  linked_discussion: string;
+}
 
-  const onSubmit = (data: any) => JSON.stringify(data);
+export default function SubmissionForm() {
+  // Use the interface in useForm
+  const { register, handleSubmit } = useForm<SubmissionFormData>();
+
+  const onSubmit = (data: SubmissionFormData) => {
+    console.log(JSON.stringify(data)); // Process the form data
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -25,7 +38,7 @@ export default function SubmissionForm() {
       <select {...register("linked_discussion")}>
         <option value="">Select SE practice...</option>
         <option value="TDD">TDD</option>
-        <option value="Mob Programming">Mob Programmin</option>
+        <option value="Mob Programming">Mob Programming</option>
       </select>
       <input type="submit" />
     </form>
