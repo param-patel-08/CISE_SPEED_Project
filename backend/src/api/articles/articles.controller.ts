@@ -1,46 +1,45 @@
 import { Controller, Get, Param, Post, Put, Body, Query, Delete, BadRequestException, NotFoundException } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 
-
-
 @Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
-  // Ping the MongoDB server to ensure connection
+  // Endpoint to ping the MongoDB server to check the connection
   @Get('ping')
   async ping() {
     await this.articlesService.connect();
     return 'Pinged your deployment. You successfully connected to MongoDB!';
   }
 
+  // Endpoint to delete an article by its ID
   @Delete()
   async deleteArticle(@Query('id') id: string) {
     const result = await this.articlesService.deleteArticleById(id);
     if (!result) {
-      throw new NotFoundException('Article not found');
+      throw new NotFoundException('Article not found'); // Throw error if the article does not exist
     }
     return { message: 'Article deleted successfully' };
   }
 
-  // Get all approved articles
+  // Endpoint to retrieve all approved articles
   @Get()
   async getAllApprovedArticles() {
     return await this.articlesService.getAllApprovedArticles();
   }
 
-  // Get article by ID
+  // Endpoint to get a single article by its ID
   @Get('article')
   async getArticleByID(@Query('id') id: string) {
     const article = await this.articlesService.getArticleById(id);
     if (article) {
       return article;
     } else {
-      throw new BadRequestException();
+      throw new BadRequestException(); // Throw error if the article ID is invalid or not found
     }
   }
 
-  // Update article status (approve or reject)
+  // Endpoint to update the status of an article (e.g., Approved, Rejected)
   @Put('article')
   async updateArticleStatus(
     @Body('id') id: string,
@@ -48,17 +47,16 @@ export class ArticlesController {
   ) {
     let validstatuses = ['Approved', 'Rejected', 'Shortlisted','Pending'];
 
-    if (validstatuses.includes(status))
-    {
+    if (validstatuses.includes(status)) {
       return await this.articlesService.updateArticleStatus(id, status);
     }
-    
   }
 
-  @Post('search')  // Changed to POST
+  // Endpoint to search for articles based on query and optional filters
+  @Post('search')  // Using POST for better flexibility with search parameters
   async searchArticles(
-    @Body('query') query: string,  // Query string for search
-    @Body('filters') filters: {    // Optional filters in the request body
+    @Body('query') query: string,  // The search query string
+    @Body('filters') filters: {    // Optional filters provided in the request body
       SEPractice?: string[];
       Perspective?: number[];
       AfterPubYear?: number;
@@ -68,18 +66,19 @@ export class ArticlesController {
     return await this.articlesService.searchArticles(query, filters);
   }
 
-  // Get all pending articles
+  // Endpoint to get all articles that are currently pending review
   @Get('pending')
   async getPendingArticles() {
     return await this.articlesService.getPendingArticles();
   }
 
+  // Endpoint to retrieve all shortlisted articles
   @Get('shortlisted')
   async getShortlistedArticles() {
     return await this.articlesService.getShortlistedArticles();
   }
 
-  // Create multiple new articles
+  // Endpoint to create multiple new articles in bulk
   @Post('add-all')
   async createArticles(@Body() articles: {
     Authors: string[],
@@ -96,7 +95,7 @@ export class ArticlesController {
     return await this.articlesService.createArticles(articles);
   }
 
-  // Create a new article
+  // Endpoint to create a new article
   @Post()
   async createArticle(
     @Body('Authors') Authors: string[],

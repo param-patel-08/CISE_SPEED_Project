@@ -2,6 +2,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, OnModuleDestroy, OnModuleInit, NotFoundException, BadRequestException } from '@nestjs/common';
 import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
 
+// Define user roles for use within the service
 export enum Users {
   Analyst = 'Analysis',
   Moderator = 'Moderation'
@@ -10,8 +11,8 @@ export enum Users {
 @Injectable()
 export class ArticlesService implements OnModuleDestroy, OnModuleInit {
   private client: MongoClient;
-  
 
+  // Initialize the service with mailer and MongoDB client
   constructor(private readonly mailService: MailerService) {
     const uri = process.env.DBCONNECTIONSTRING;
     this.client = new MongoClient(uri, {
@@ -20,13 +21,15 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
         strict: true,
         deprecationErrors: true,
       },
-    })
-    ;
-  }
-  async onModuleInit() {
-    await this.connect()
+    });
   }
 
+  // Method to handle initial setup
+  async onModuleInit() {
+    await this.connect();
+  }
+
+  // Send email notification based on the type of user
   sendMail(article: {
     JournalName: string,
     Authors: string[],
@@ -53,40 +56,43 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
         <p>Regards,</p>
         <p><strong>Speed @ AUT</strong></p>
     `;
-    
+
     let recipient: string;
 
-    switch(user)
-    {
-        case Users.Analyst:
-            recipient = "wvz8937@autuni.ac.nz"
-        case Users.Moderator:
-            recipient = "tasmankeenan03@gmail.com"
+    // Determine the recipient based on the user role
+    switch (user) {
+      case Users.Analyst:
+        recipient = "wvz8937@autuni.ac.nz";
+        break;
+      case Users.Moderator:
+        recipient = "tasmankeenan03@gmail.com";
+        break;
     }
-  
-    this.mailService.sendMail({
-        from: 'ada88@ethereal.email',
-        to: recipient,
-        subject: `Another Publication is ready for your review`,
-        html: message,
-        });
-    console.log("email sent")  
-}
 
+    this.mailService.sendMail({
+      from: 'ada88@ethereal.email',
+      to: recipient,
+      subject: `Another Publication is ready for your review`,
+      html: message,
+    });
+    console.log("Email sent");
+  }
+
+  // Connect to MongoDB
   async connect() {
     await this.client.connect();
     await this.client.db('admin').command({ ping: 1 });
-    console.log('Pinged your deployment. You successfully connected to MongoDB!');
+    console.log('Successfully connected to MongoDB!');
   }
 
-  // Get all approved articles
+  // Fetch all approved articles from the database
   async getAllApprovedArticles() {
     const collection = this.client.db('SPEED').collection('articles');
     const approvedArticles = await collection.find({ Status: 'Approved' }).toArray();
     return approvedArticles;
   }
 
-  // Get article by ID
+  // Retrieve an article by its ID, incrementing impressions
   async getArticleById(id: string) {
     const collection = this.client.db('SPEED').collection('articles');
 
@@ -95,7 +101,6 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     }
 
     const ObID = new ObjectId(id);
-
     const result = await collection.findOneAndUpdate(
       { _id: ObID },
       { $inc: { Impressions: 1 } }
@@ -108,6 +113,7 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     return result;
   }
 
+  // Fetch all shortlisted articles
   async getShortlistedArticles() {
     const collection = this.client.db('SPEED').collection('articles');
 
@@ -119,9 +125,8 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     }
   }
 
-  // Approve or reject an article
+  // Update the status of an article (approve, reject, etc.)
   async updateArticleStatus(id: string, status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending') {
-
     // Enforce runtime validation for the status
     const validStatuses = ['Approved', 'Rejected', 'Shortlisted', 'Pending'];
     if (!validStatuses.includes(status)) {
@@ -135,64 +140,66 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     }
 
     const ObID = new ObjectId(id);
-
     const result = await collection.updateOne(
       { _id: ObID },
       { $set: { Status: status } }
     );
 
-    return result.modifiedCount > 0 ?
-      { status: 'Success' } :
-      { status: 'Failed', message: 'Article not found or update failed' };
+    return result.modifiedCount > 0 ? { status: 'Success' } : { status: 'Failed', message: 'Article not found or update failed' };
   }
 
-
-
+  // Search for articles with optional filters
   async searchArticles(query: string, filters: { SEPractice?: string[], Perspective?: number[], AfterPubYear?: number, BeforePubYear?: number }) {
     console.log('Query:', query);
     console.log('Filters:', JSON.stringify(filters, null, 2));
-  
+
     const collection = this.client.db('SPEED').collection('articles');
-    
     const searchCriteria: any = {};
-    searchCriteria.Status = 'Approved';
-    
+    searchCriteria.Status = 'Approved'; // Only include articles that are marked as 'Approved'
+
+    // Check if there is a search query and apply it to the search criteria
     if (query) {
       console.log('Query provided');
       searchCriteria.$or = [
-        { Title: { $regex: query, $options: 'i' } },
-        { Authors: { $elemMatch: { $regex: query, $options: 'i' } } },
-        { SEPractice: { $regex: query, $options: 'i' } }
+        { Title: { $regex: query, $options: 'i' } }, // Search within the title for the query string, case-insensitive
+        { Authors: { $elemMatch: { $regex: query, $options: 'i' } } }, // Search within the authors array for a match
+        { SEPractice: { $regex: query, $options: 'i' } } // Search within SE Practice field for the query string
       ];
     }
-    
+
+    // Check if there are any Software Engineering Practice Filters Applied
     if (filters?.SEPractice?.length) {
       console.log('SEPractice filter applied');
-      searchCriteria.SEPractice = { $in: filters.SEPractice };
+      searchCriteria.SEPractice = { $in: filters.SEPractice }; // Include only articles that match any of the specified SE Practices
     }
-  
+
+    // Check if there are any Perspective Filters Applied
     if (filters?.Perspective?.length) {
       console.log('Perspective filter applied');
-      searchCriteria.Perspective = { $in: filters.Perspective };
+      searchCriteria.Perspective = { $in: filters.Perspective }; // Include only articles with the specified perspectives
     }
-  
+
+    // Check if there is a filter for articles published after a specific year
     if (filters?.AfterPubYear != null) {
       console.log('AfterPubYear filter applied');
-      searchCriteria.PubYear = { ...searchCriteria.PubYear, $gte: filters.AfterPubYear };
+      searchCriteria.PubYear = { ...searchCriteria.PubYear, $gte: filters.AfterPubYear }; // Include articles published on or after the specified year
     }
-  
+
+    // Check if there is a filter for articles published before a specific year
     if (filters?.BeforePubYear != null) {
       console.log('BeforePubYear filter applied');
-      searchCriteria.PubYear = { ...searchCriteria.PubYear, $lte: filters.BeforePubYear };
+      searchCriteria.PubYear = { ...searchCriteria.PubYear, $lte: filters.BeforePubYear }; // Include articles published on or before the specified year
     }
-  
+
     console.log('Search Criteria:', JSON.stringify(searchCriteria, null, 2));
-  
+
+    // Execute the search with the defined criteria and return up to 30 results
     const searchResults = await collection.find(searchCriteria).limit(30).toArray();
-  
     return searchResults;
   }
-  
+
+
+  // Delete an article by its ID
   async deleteArticleById(id: string): Promise<boolean> {
     const collection = this.client.db('SPEED').collection('articles');
 
@@ -206,9 +213,7 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     return result.deletedCount > 0;
   }
 
-
-
-  // Get all pending articles
+  // Fetch all pending articles
   async getPendingArticles() {
     const collection = this.client.db('SPEED').collection('articles');
 
@@ -220,8 +225,7 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     }
   }
 
-
-  // Create a new article
+  // Create a new article and notify the moderator
   async createArticle(article: {
     JournalName: string,
     Authors: string[],
@@ -234,24 +238,21 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     Summary: string,
     Perspective: string,
   }) {
-
     let articleToBeInserted = {
       ...article,
       DOE: new Date(),
       Status: 'Pending',
       Impressions: 0
-    }
+    };
     const collection = this.client.db('SPEED').collection('articles');
     let newArticle = await collection.insertOne(articleToBeInserted);
-    
+
     this.sendMail(articleToBeInserted, Users.Moderator);
 
     return { status: 'Success', message: 'Article created successfully', details: newArticle };
   }
 
-  
-
-  // Create multiple new articles
+  // Create multiple new articles in bulk
   async createArticles(articles: {
     JournalName: string,
     Authors: string[],
@@ -275,7 +276,7 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     return { status: 'Success', message: 'Articles created successfully', details: result };
   }
 
-
+  // Handle cleanup tasks on module destruction
   async onModuleDestroy() {
     await this.client.close();
   }
