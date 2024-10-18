@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Menu, MenuItem, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Menu, MenuItem } from '@mui/material';
 import { IoMdArrowDropdown } from 'react-icons/io';
-import { MenuProps } from '@mui/material/Menu';
 
 const PopulatedNavBar: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
