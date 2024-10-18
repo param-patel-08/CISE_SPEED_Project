@@ -46,7 +46,6 @@ const SortableTable: React.FC<SortableTableProps> = ({ data, onRowClick }) => {
     { key: "Perspective", label: "Perspective" },
     { key: "Impressions", label: "Impressions" },
     { key: "DOE", label: "Date of Submission" }
-    
   ];
 
   const [sortConfig, setSortConfig] = useState<{
@@ -77,15 +76,6 @@ const SortableTable: React.FC<SortableTableProps> = ({ data, onRowClick }) => {
       direction = "desc";
     }
     setSortConfig({ key, direction });
-  };
-
-  // Handle toggling header visibility
-  const handleToggleHeader = (key: keyof Article) => {
-    setVisibleHeaders((prevHeaders) =>
-      prevHeaders.includes(key)
-        ? prevHeaders.filter((h) => h !== key) // Remove the header if it's already selected
-        : [...prevHeaders, key] // Add the header if it's not selected
-    );
   };
 
   return (
@@ -133,13 +123,12 @@ const SortableTable: React.FC<SortableTableProps> = ({ data, onRowClick }) => {
               <TableRow key={i} hover onClick={() => onRowClick(row)} style={{ cursor: "pointer" }}>
                 {visibleHeaders.map((key) => (
                   <TableCell key={key}>
-                  {Array.isArray(row[key])
-                    ? (row[key] as string[]).join(", ")
-                    : row[key] instanceof Date
-                    ? (row[key] as Date).toLocaleDateString() // Format the date
-                    : row[key]}
-                </TableCell>
-                
+                    {Array.isArray(row[key])
+                      ? (row[key] as string[]).join(", ")
+                      : row[key] instanceof Date
+                      ? (row[key] as Date).toLocaleDateString() // Format the date
+                      : row[key]}
+                  </TableCell>
                 ))}
               </TableRow>
             ))}
