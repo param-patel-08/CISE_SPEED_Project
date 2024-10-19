@@ -20,7 +20,6 @@ import ArticleDetailsModal from "../../components/articledetails/ArticleDetailsM
 import { Article } from "../../components/article/Article";
 
 export default function Moderator() {
-  const [analytics, setAnalytics] = useState<Article[]>([]);
   const [Articles, setArticles] = useState<Article[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(false);
@@ -69,14 +68,6 @@ export default function Moderator() {
     const defaultStatus = "Pending";
     setSelectedStatus(defaultStatus);
     handleStatusChange(defaultStatus);
-
-    axios
-      .get<Article[]>("/api/articles")
-      .then((response) => {
-        const articles = response.data;
-        setAnalytics(articles);
-      })
-      .catch((error) => console.error("Error fetching articles:", error));
   }, []);
 
   const handleApproval = (
