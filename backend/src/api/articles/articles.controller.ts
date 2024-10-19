@@ -25,7 +25,7 @@ export class ArticlesController {
   // Endpoint to retrieve all approved articles
   @Get()
   async getAllApprovedArticles() {
-    return await this.articlesService.getAllApprovedArticles();
+    return await this.articlesService.getArticles('Approved');
   }
 
   // Endpoint to get a single article by its ID
@@ -44,12 +44,20 @@ export class ArticlesController {
   async updateArticleStatus(
     @Body('id') id: string,
     @Body('status') status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending',
+    @Body('reason') reason: string
   ) {
     let validstatuses = ['Approved', 'Rejected', 'Shortlisted','Pending'];
 
     if (validstatuses.includes(status)) {
-      return await this.articlesService.updateArticleStatus(id, status);
+      return await this.articlesService.updateArticleStatus(id, status, reason);
     }
+  }
+
+  @Post('report/:id')
+  async reportArticle(@Param('id') id: string, @Body('reason') reason: string) {
+    
+    console.log("reported")
+    return await this.articlesService.updateArticleStatus(id, 'Reported', reason);
   }
 
   // Endpoint to search for articles based on query and optional filters
@@ -69,14 +77,25 @@ export class ArticlesController {
   // Endpoint to get all articles that are currently pending review
   @Get('pending')
   async getPendingArticles() {
-    return await this.articlesService.getPendingArticles();
+    return await this.articlesService.getArticles('Pending');
   }
 
   // Endpoint to retrieve all shortlisted articles
   @Get('shortlisted')
   async getShortlistedArticles() {
-    return await this.articlesService.getShortlistedArticles();
+    return await this.articlesService.getArticles('Shortlisted');
   }
+
+  @Get('rejected')
+  async getRejectedArticles() {
+    return await this.articlesService.getArticles('Rejected');
+  }
+
+  @Get('reported')
+  async getReportedArticles() {
+    return await this.articlesService.getArticles('Reported')
+  }
+
 
   // Endpoint to create multiple new articles in bulk
   @Post('add-all')

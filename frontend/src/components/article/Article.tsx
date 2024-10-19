@@ -13,5 +13,6 @@ export interface Article {
     Perspective: string; // The perspective taken in the article (e.g., supportive, neutral, or rejecting certain practices)
     Impressions: number; // The number of impressions or views the article has received
     Status: string; // The current status of the article (e.g., published, draft, under review)
+    Reason: string; //the reason that this is the current status of the article
     DOE: Date; // The date of entry (DOE), representing when the article was added to the system
 }

@@ -77,20 +77,6 @@ const NewArticle = () => {
     setAuthors(authors.map((oldValue, i) => (index === i ? value : oldValue)));
   };
 
-  // Function to dynamically set color for the Perspective dropdown
-  const getColorForPerspective = (value: string) => {
-    switch (value) {
-      case "Reject":
-        return "red";
-      case "Neutral":
-        return "#D4AC0D"; 
-      case "Support":
-        return "green";
-      default:
-        return "";
-    }
-  };
-
   return (
     <Container>
       <Typography variant="h4" gutterBottom>

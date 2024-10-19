@@ -20,66 +20,77 @@ import ArticleDetailsModal from "../../components/articledetails/ArticleDetailsM
 import { Article } from "../../components/article/Article";
 
 export default function Moderator() {
-  const [analytics, setAnalytics] = useState<Article[]>([]);
-  const [pendingArticles, setPendingArticles] = useState<Article[]>([]);
+  const [Articles, setArticles] = useState<Article[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [reasons, setReasons] = useState<{ [key: string]: string }>({});
 
-  useEffect(() => {
-    // Fetching all approved articles for analytics
+  function handleStatusChange(status: string) {
+    console.log(status);
+    setSelectedStatus(status);
+
+    let endpoint = "";
+    switch (status) {
+      case "Approved":
+        endpoint = "/api/articles";
+        break;
+      case "Rejected":
+        endpoint = "/api/articles/rejected";
+        break;
+      case "Pending":
+        endpoint = "/api/articles/pending";
+        break;
+      case "Shortlisted":
+        endpoint = "/api/articles/shortlisted";
+        break;
+      case "Reported":
+        endpoint = "/api/articles/reported";
+        break;
+      default:
+        console.log("Filter by status went wrong");
+        return;
+    }
+
     axios
-      .get<Article[]>("/api/articles")
+      .get<Article[]>(endpoint)
       .then((response) => {
         const articles = response.data;
-        setAnalytics(articles);
+        setArticles(articles);
       })
-      .catch((error) => console.error("Error fetching articles:", error));
+      .catch((error) =>
+        console.error(`Error fetching articles for status ${status}:`, error)
+      );
+  }
 
-    // Fetching all pending articles for moderation
-    axios
-      .get<Article[]>("/api/articles/pending")
-      .then((response) => {
-        setPendingArticles(response.data);
-      })
-      .catch((error) => console.error("Error fetching pending articles:", error));
+  useEffect(() => {
+    const defaultStatus = "Pending";
+    setSelectedStatus(defaultStatus);
+    handleStatusChange(defaultStatus);
   }, []);
 
-  const handleApproval = (id: string, status: "Approved" | "Rejected") => {
+  const handleApproval = (
+    id: string,
+    status: "Approved" | "Rejected" | "Pending" | "Shortlisted" | "Reported"
+  ) => {
+    const reason = reasons[id] || "";
     axios
-      .put("/api/articles/article", { id, status })
+      .put("/api/articles/article", { id, status, reason })
       .then((response) => {
         console.log(response.data);
-        // Update the pending articles list
-        setPendingArticles((prevArticles) =>
-          prevArticles.filter((article) => article._id !== id)
-        );
+        handleStatusChange(selectedStatus);
       })
       .catch((error) => console.error("Error updating article status:", error));
   };
 
-  // Function to delete article by ID
-  const handleDelete = (id: string) => {
-    axios
-      .delete(`/api/articles`, { params: { id } })
-      .then((response) => {
-        console.log(response.data);
-        // Update both lists after deletion
-        setAnalytics((prevAnalytics) =>
-          prevAnalytics.filter((article) => article._id !== id)
-        );
-        setPendingArticles((prevArticles) =>
-          prevArticles.filter((article) => article._id !== id)
-        );
-      })
-      .catch((error) => console.error("Error deleting article:", error));
+  const handleReasonChange = (id: string, reason: string) => {
+    setReasons((prevReasons) => ({ ...prevReasons, [id]: reason }));
   };
 
-  // Function to fetch article details by ID and open the modal
   const handleClick = async (id: string) => {
     setLoading(true);
-    setOpen(true); // Open modal
+    setOpen(true);
     try {
       const response = await axios.get(`/api/articles/article`, {
         params: { id },
@@ -91,17 +102,71 @@ export default function Moderator() {
       setLoading(false);
     }
   };
+  
 
-  // Close the modal
   const handleClose = () => {
     setOpen(false);
     setSelectedArticle(null);
   };
 
-  // Filter articles based on selected status
-  const filteredArticles = selectedStatus
-    ? pendingArticles.filter((article) => article.Status === selectedStatus)
-    : pendingArticles;
+  const renderActionButtons = (article: Article) => {
+    const reason = reasons[article._id] || "";
+  
+    return (
+      <Box display="flex" alignItems="center">
+        <TextField
+          value={reason}
+          onChange={(e) => handleReasonChange(article._id, e.target.value)}
+          placeholder="Reason"
+          size="small"
+          onClick={(e) => e.stopPropagation()} // Prevent click event from propagating
+          onMouseDown={(e) => e.stopPropagation()} // Prevent mousedown event from propagating
+          sx={{ marginRight: 1, width: "200px" }}
+          required // Mark the TextField as required
+          error={!reason} // Show error state when reason is empty
+          helperText={!reason ? "Reason is required" : ""}
+        />
+  
+        <Button
+          variant="contained"
+          color="success"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleApproval(article._id, "Approved");
+          }}
+          disabled={!reason} // Disable button if reason is empty
+          sx={{ marginRight: 1, width: "120px", height: "40px" }}
+        >
+          Approve
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleApproval(article._id, "Rejected");
+          }}
+          disabled={!reason} // Disable button if reason is empty
+          sx={{ marginRight: 1, width: "120px", height: "40px" }}
+        >
+          Reject
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleApproval(article._id, "Shortlisted");
+          }}
+          disabled={!reason} // Disable button if reason is empty
+          sx={{ width: "120px", height: "40px" }}
+        >
+          Shortlist
+        </Button>
+      </Box>
+    );
+  };
+
 
   return (
     <Container>
@@ -109,48 +174,6 @@ export default function Moderator() {
         Moderator Page
       </Typography>
 
-      {/* Analytics Section */}
-      <Box marginBottom={4}>
-        <Typography variant="h5" component="h2" gutterBottom>
-          Analytics
-        </Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Title</TableCell>
-                <TableCell>Authors</TableCell>
-                <TableCell>Impressions</TableCell>
-                <TableCell>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {analytics.map((article) => (
-                <TableRow key={article._id} onClick={() => handleClick(article._id)}>
-                  <TableCell>{article.JournalName}</TableCell>
-                  <TableCell>{article.Authors.join(", ")}</TableCell>
-                  <TableCell>{article.Impressions}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevents triggering the modal on button click
-                        handleDelete(article._id);
-                      }}
-                      sx={{ width: "120px", height: "40px" }} // Set fixed size for alignment
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-
-      {/* Status Filter */}
       <Box marginBottom={3}>
         <TextField
           select
@@ -158,18 +181,20 @@ export default function Moderator() {
           variant="outlined"
           fullWidth
           value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
+          onChange={(e) => {
+            const status = e.target.value;
+            setSelectedStatus(status);
+            handleStatusChange(status);
+          }}
         >
-          <MenuItem value="">
-            <em>All Statuses</em>
-          </MenuItem>
           <MenuItem value="Pending">Pending</MenuItem>
           <MenuItem value="Approved">Approved</MenuItem>
           <MenuItem value="Rejected">Rejected</MenuItem>
+          <MenuItem value="Shortlisted">Shortlisted</MenuItem>
+          <MenuItem value="Reported">Reported</MenuItem>
         </TextField>
       </Box>
 
-      {/* Moderate Articles Section */}
       <Box>
         <Typography variant="h5" component="h2" gutterBottom>
           Moderate Articles
@@ -181,50 +206,21 @@ export default function Moderator() {
                 <TableCell>Title</TableCell>
                 <TableCell>Authors</TableCell>
                 <TableCell>Submission Date</TableCell>
+                <TableCell>Status: Reason</TableCell>
                 <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredArticles.map((article) => (
-                <TableRow key={article._id} onClick={() => handleClick(article._id)}>
+              {Articles.map((article) => (
+                <TableRow
+                  key={article._id}
+                  onClick={() => handleClick(article._id)}
+                >
                   <TableCell>{article.JournalName}</TableCell>
                   <TableCell>{article.Authors.join(", ")}</TableCell>
                   <TableCell>{String(article.DOE)}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevents triggering the modal on button click
-                        handleApproval(article._id, "Approved");
-                      }}
-                      sx={{ marginRight: 1, width: "120px", height: "40px" }} // Fixed size for consistency
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevents triggering the modal on button click
-                        handleApproval(article._id, "Rejected");
-                      }}
-                      sx={{ marginRight: 1, width: "120px", height: "40px" }} // Fixed size for consistency
-                    >
-                      Reject
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevents triggering the modal on button click
-                        handleDelete(article._id);
-                      }}
-                      sx={{ width: "120px", height: "40px" }} // Ensure consistent sizing
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
+                  <TableCell>{article.Status}: {article.Reason}</TableCell>
+                  <TableCell>{renderActionButtons(article)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -232,7 +228,6 @@ export default function Moderator() {
         </TableContainer>
       </Box>
 
-      {/* Modal Popup for showing article details */}
       <ArticleDetailsModal
         open={open}
         loading={loading}
