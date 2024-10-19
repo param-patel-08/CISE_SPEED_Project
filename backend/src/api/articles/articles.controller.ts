@@ -25,7 +25,7 @@ export class ArticlesController {
   // Endpoint to retrieve all approved articles
   @Get()
   async getAllApprovedArticles() {
-    return await this.articlesService.getAllApprovedArticles();
+    return await this.articlesService.getArticles('Approved');
   }
 
   // Endpoint to get a single article by its ID
@@ -69,14 +69,20 @@ export class ArticlesController {
   // Endpoint to get all articles that are currently pending review
   @Get('pending')
   async getPendingArticles() {
-    return await this.articlesService.getPendingArticles();
+    return await this.articlesService.getArticles('Pending');
   }
 
   // Endpoint to retrieve all shortlisted articles
   @Get('shortlisted')
   async getShortlistedArticles() {
-    return await this.articlesService.getShortlistedArticles();
+    return await this.articlesService.getArticles('Shortlisted');
   }
+
+  @Get('rejected')
+  async getRejectedArticles() {
+    return await this.articlesService.getArticles('Rejected');
+  }
+
 
   // Endpoint to create multiple new articles in bulk
   @Post('add-all')

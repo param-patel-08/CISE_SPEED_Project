@@ -85,13 +85,6 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     console.log('Successfully connected to MongoDB!');
   }
 
-  // Fetch all approved articles from the database
-  async getAllApprovedArticles() {
-    const collection = this.client.db('SPEED').collection('articles');
-    const approvedArticles = await collection.find({ Status: 'Approved' }).toArray();
-    return approvedArticles;
-  }
-
   // Retrieve an article by its ID, incrementing impressions
   async getArticleById(id: string) {
     const collection = this.client.db('SPEED').collection('articles');
@@ -112,21 +105,10 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
 
     return result;
   }
-
-  // Fetch all shortlisted articles
-  async getShortlistedArticles() {
-    const collection = this.client.db('SPEED').collection('articles');
-
-    try {
-      const shortlistedArticles = await collection.find({ Status: 'Shortlisted' }).toArray();
-      return shortlistedArticles;
-    } catch (error) {
-      throw new Error('Could not retrieve shortlisted articles');
-    }
-  }
+  
 
   // Update the status of an article (approve, reject, etc.)
-  async updateArticleStatus(id: string, status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending') {
+  async updateArticleStatus(id: string, status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending' ) {
     // Enforce runtime validation for the status
     const validStatuses = ['Approved', 'Rejected', 'Shortlisted', 'Pending'];
     if (!validStatuses.includes(status)) {
@@ -213,13 +195,13 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     return result.deletedCount > 0;
   }
 
-  // Fetch all pending articles
-  async getPendingArticles() {
+  // Fetch articles by status
+  async getArticles(status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending') {
     const collection = this.client.db('SPEED').collection('articles');
 
     try {
-      const pendingArticles = await collection.find({ Status: 'Pending' }).toArray();
-      return pendingArticles;
+      const articles = await collection.find({ Status: status }).toArray();
+      return articles;
     } catch (error) {
       throw new Error('Could not retrieve pending articles');
     }
