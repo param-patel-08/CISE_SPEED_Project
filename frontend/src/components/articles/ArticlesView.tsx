@@ -95,11 +95,6 @@ const ArticlesView = () => {
     setSelectedArticle(null);
   };
 
-  // Report modal handlers
-  const handleReport = () => {
-    setReportOpen(true); // Open the report modal
-  };
-
   const handleCloseReportModal = () => {
     setReportOpen(false); // Close the report modal
     setReportReason(''); // Reset the reason
@@ -227,7 +222,6 @@ const ArticlesView = () => {
         loading={loading}
         selectedArticle={selectedArticle}
         onClose={handleCloseModal}
-        onReport={handleReport} // Open the report modal
       />
 
       {/* Report Modal */}

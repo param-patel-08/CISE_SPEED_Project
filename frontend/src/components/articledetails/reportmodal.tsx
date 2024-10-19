@@ -1,8 +1,6 @@
-// Import necessary dependencies from React and Material UI
+// ReportModal.tsx
 import React, { useState } from "react";
 import {
-  Box,
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -12,31 +10,50 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Button,
 } from "@mui/material";
+import axios from "axios";
 
-// Define props for ReportModal
 interface ReportModalProps {
-  open: boolean; // Controls whether the modal is open or closed
-  onClose: () => void; // Function to handle closing the modal
-  onSubmit: (reason: string) => void; // Function to handle report submission
+  open: boolean;
+  articleId: string; // Added article ID for direct backend interaction
+  onClose: () => void; // Function to close the modal
 }
 
-// Functional component for report modal
-const ReportModal: React.FC<ReportModalProps> = ({ open, onClose, onSubmit }) => {
-  const [reason, setReason] = useState(""); // State to store the selected reason
-  const [customReason, setCustomReason] = useState(""); // State to store custom reason
+const ReportModal: React.FC<ReportModalProps> = ({ open, articleId, onClose }) => {
+  const [selectedReason, setSelectedReason] = useState<string>("");
+  const [customReason, setCustomReason] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setReason((event.target as HTMLInputElement).value);
+  const handleReasonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedReason(event.target.value);
   };
 
-  const handleSubmit = () => {
-    if (reason === "Other") {
-      onSubmit(customReason); // Submit custom reason
-    } else {
-      onSubmit(reason); // Submit selected reason
+  const handleCustomReasonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomReason(event.target.value);
+  };
+
+  const handleSubmit = async () => {
+    const reason = selectedReason === "Other" ? customReason : selectedReason;
+    if (!reason) {
+      setError("Please select or specify a reason.");
+      return;
     }
-    onClose(); // Close the modal after submission
+
+    setLoading(true);
+    setError("");
+    
+    try {
+      await axios.post(`/api/articles/report/${articleId}`, { reason });
+      console.log("Report successfully submitted.");
+      onClose(); // Close the modal after submitting
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      setError("Failed to submit the report. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,32 +61,35 @@ const ReportModal: React.FC<ReportModalProps> = ({ open, onClose, onSubmit }) =>
       <DialogTitle>Report Article</DialogTitle>
       <DialogContent>
         <Typography>Please select the reason for reporting this article:</Typography>
-        <RadioGroup value={reason} onChange={handleRadioChange}>
+        <RadioGroup value={selectedReason} onChange={handleReasonChange}>
           <FormControlLabel value="Inappropriate content" control={<Radio />} label="Inappropriate content" />
           <FormControlLabel value="Spam" control={<Radio />} label="Spam or misleading" />
           <FormControlLabel value="Copyright violation" control={<Radio />} label="Copyright violation" />
           <FormControlLabel value="Other" control={<Radio />} label="Other (Please specify)" />
         </RadioGroup>
-
-        {/* Text field to collect custom reason if "Other" is selected */}
-        {reason === "Other" && (
+        {selectedReason === "Other" && (
           <TextField
             fullWidth
             label="Please specify"
             variant="outlined"
             margin="normal"
             value={customReason}
-            onChange={(e) => setCustomReason(e.target.value)}
+            onChange={handleCustomReasonChange}
           />
         )}
-      </DialogContent>
 
+        {error && (
+          <Typography color="error" variant="body2" style={{ marginTop: 10 }}>
+            {error}
+          </Typography>
+        )}
+      </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button onClick={onClose} color="primary" disabled={loading}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} color="secondary" variant="contained">
-          Submit Report
+        <Button onClick={handleSubmit} color="secondary" variant="contained" disabled={loading}>
+          {loading ? "Submitting..." : "Submit Report"}
         </Button>
       </DialogActions>
     </Dialog>

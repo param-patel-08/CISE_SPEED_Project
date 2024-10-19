@@ -108,7 +108,7 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
   
 
   // Update the status of an article (approve, reject, etc.)
-  async updateArticleStatus(id: string, status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending' | 'Reported' ) {
+  async updateArticleStatus(id: string, status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending' | 'Reported', reason: string ) {
     // Enforce runtime validation for the status
     const validStatuses = ['Approved', 'Rejected', 'Shortlisted', 'Pending', 'Reported'];
     if (!validStatuses.includes(status)) {
@@ -124,7 +124,7 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
     const ObID = new ObjectId(id);
     const result = await collection.updateOne(
       { _id: ObID },
-      { $set: { Status: status } }
+      { $set: { Status: status, Reason: reason } }
     );
 
     return result.modifiedCount > 0 ? { status: 'Success' } : { status: 'Failed', message: 'Article not found or update failed' };
@@ -224,7 +224,8 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
       ...article,
       DOE: new Date(),
       Status: 'Pending',
-      Impressions: 0
+      Impressions: 0,
+      Reason: "Article just submitted to SPEED", 
     };
     const collection = this.client.db('SPEED').collection('articles');
     let newArticle = await collection.insertOne(articleToBeInserted);
