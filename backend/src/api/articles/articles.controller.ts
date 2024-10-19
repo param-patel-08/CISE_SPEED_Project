@@ -54,6 +54,7 @@ export class ArticlesController {
 
   @Post('report/:id')
   async reportArticle(@Param('id') id: string) {
+    console.log("reported")
     return await this.articlesService.updateArticleStatus(id, 'Reported');
   }
 
@@ -86,6 +87,11 @@ export class ArticlesController {
   @Get('rejected')
   async getRejectedArticles() {
     return await this.articlesService.getArticles('Rejected');
+  }
+
+  @Get('reported')
+  async getReportedArticles() {
+    return await this.articlesService.getArticles('Reported')
   }
 
 

@@ -196,7 +196,7 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
   }
 
   // Fetch articles by status
-  async getArticles(status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending') {
+  async getArticles(status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending' | 'Reported') {
     const collection = this.client.db('SPEED').collection('articles');
 
     try {

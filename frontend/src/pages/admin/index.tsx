@@ -230,7 +230,7 @@ export default function Moderator() {
           </>
         );
       case "Reported":
-        return (
+        return (<>
           <Button
             variant="contained"
             color="error"
@@ -242,6 +242,19 @@ export default function Moderator() {
           >
             Delete
           </Button>
+
+          <Button
+          variant="contained"
+          color="success"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleApproval(article._id, "Approved");
+          }}
+          sx={{ marginRight: 1, width: "120px", height: "40px" }}
+        >
+          Dismiss
+        </Button>
+        </>
         );
       default:
         return null;
