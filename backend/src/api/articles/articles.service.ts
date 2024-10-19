@@ -108,11 +108,11 @@ export class ArticlesService implements OnModuleDestroy, OnModuleInit {
   
 
   // Update the status of an article (approve, reject, etc.)
-  async updateArticleStatus(id: string, status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending' ) {
+  async updateArticleStatus(id: string, status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending' | 'Reported' ) {
     // Enforce runtime validation for the status
-    const validStatuses = ['Approved', 'Rejected', 'Shortlisted', 'Pending'];
+    const validStatuses = ['Approved', 'Rejected', 'Shortlisted', 'Pending', 'Reported'];
     if (!validStatuses.includes(status)) {
-      throw new BadRequestException("Invalid status. Must be 'Approved', 'Rejected', 'Shortlisted', or 'Pending'.");
+      throw new BadRequestException("Invalid status. Must be 'Approved', 'Rejected', 'Shortlisted', 'Reported', or 'Pending'.");
     }
 
     const collection = this.client.db('SPEED').collection('articles');

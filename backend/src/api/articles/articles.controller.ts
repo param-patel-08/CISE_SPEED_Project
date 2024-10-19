@@ -43,13 +43,18 @@ export class ArticlesController {
   @Put('article')
   async updateArticleStatus(
     @Body('id') id: string,
-    @Body('status') status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending',
+    @Body('status') status: 'Approved' | 'Rejected' | 'Shortlisted' | 'Pending' | 'Reported',
   ) {
-    let validstatuses = ['Approved', 'Rejected', 'Shortlisted','Pending'];
+    let validstatuses = ['Approved', 'Rejected', 'Shortlisted','Pending', 'Reported'];
 
     if (validstatuses.includes(status)) {
       return await this.articlesService.updateArticleStatus(id, status);
     }
+  }
+
+  @Post('report/:id')
+  async reportArticle(@Param('id') id: string) {
+    return await this.articlesService.updateArticleStatus(id, 'Reported');
   }
 
   // Endpoint to search for articles based on query and optional filters

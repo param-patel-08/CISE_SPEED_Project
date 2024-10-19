@@ -189,4 +189,22 @@ describe('ArticlesController', () => {
       });
     });
   });
+  describe('reportArticle', () => {
+    it('should update the article status to Reported', async () => {
+      const articleId = '60d0fe4f5311236168a109ca'; // Example ObjectId
+      const expectedResult = { status: 'Success' };
+
+      jest
+        .spyOn(service, 'updateArticleStatus')
+        .mockResolvedValue(expectedResult);
+
+      const result = await controller.reportArticle(articleId);
+
+      expect(service.updateArticleStatus).toHaveBeenCalledWith(
+        articleId,
+        'Reported',
+      );
+      expect(result).toEqual(expectedResult);
+    });
+  });
 });
