@@ -14,6 +14,13 @@ import {
   InputLabel,
   FormControl,
   SelectChangeEvent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  RadioGroup,
+  FormControlLabel,
+  Radio
 } from '@mui/material';
 import SortableTable from '../table/SortableTable'; // Import SortableTable component
 import ArticleDetailsModal from '../articledetails/ArticleDetailsModal'; // Import ArticleDetailsModal
@@ -26,6 +33,11 @@ const ArticlesView = () => {
   const [error, setError] = useState('');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [open, setOpen] = useState(false);
+
+  // Report modal state
+  const [reportOpen, setReportOpen] = useState(false); // Report modal open state
+  const [reportReason, setReportReason] = useState(''); // Report reason
+  const [customReason, setCustomReason] = useState(''); // Custom reason for 'Other'
 
   // Filters
   const [SEPractice, setSEPractice] = useState<string[]>([]);
@@ -81,6 +93,24 @@ const ArticlesView = () => {
   const handleCloseModal = () => {
     setOpen(false);
     setSelectedArticle(null);
+  };
+
+  // Report modal handlers
+  const handleReport = () => {
+    setReportOpen(true); // Open the report modal
+  };
+
+  const handleCloseReportModal = () => {
+    setReportOpen(false); // Close the report modal
+    setReportReason(''); // Reset the reason
+    setCustomReason(''); // Reset the custom reason if "Other" was selected
+  };
+
+  const handleSubmitReport = () => {
+    const finalReason = reportReason === 'Other' ? customReason : reportReason;
+    console.log("Report submitted for reason:", finalReason);
+    // Here you can send the report reason to your backend
+    handleCloseReportModal(); // Close the modal after submitting the report
   };
 
   return (
@@ -197,7 +227,45 @@ const ArticlesView = () => {
         loading={loading}
         selectedArticle={selectedArticle}
         onClose={handleCloseModal}
+        onReport={handleReport} // Open the report modal
       />
+
+      {/* Report Modal */}
+      <Dialog open={reportOpen} onClose={handleCloseReportModal} maxWidth="sm" fullWidth>
+        <DialogTitle>Report Article</DialogTitle>
+        <DialogContent>
+          <Typography>Please select the reason for reporting this article:</Typography>
+          <RadioGroup
+            value={reportReason}
+            onChange={(e) => setReportReason((e.target as HTMLInputElement).value)}
+          >
+            <FormControlLabel value="Inappropriate content" control={<Radio />} label="Inappropriate content" />
+            <FormControlLabel value="Spam" control={<Radio />} label="Spam or misleading" />
+            <FormControlLabel value="Copyright violation" control={<Radio />} label="Copyright violation" />
+            <FormControlLabel value="Other" control={<Radio />} label="Other (Please specify)" />
+          </RadioGroup>
+
+          {/* Custom reason input if 'Other' is selected */}
+          {reportReason === 'Other' && (
+            <TextField
+              fullWidth
+              label="Please specify"
+              variant="outlined"
+              margin="normal"
+              value={customReason}
+              onChange={(e) => setCustomReason(e.target.value)}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseReportModal} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmitReport} color="secondary" variant="contained">
+            Submit Report
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={!!error}

@@ -26,6 +26,7 @@ interface ArticleDetailsModalProps {
   loading: boolean; // Indicates whether the data is still loading
   selectedArticle: Article | null; // The article to be displayed (or null if no article is selected)
   onClose: () => void; // Function to handle closing the modal
+  onReport: () => void; // Function to handle reporting the article
 }
 
 // Functional component to display article details in a modal
@@ -34,6 +35,7 @@ const ArticleDetailsModal: React.FC<ArticleDetailsModalProps> = ({
   loading, // Whether the article details are loading
   selectedArticle, // The selected article object (if available)
   onClose, // Function to close the modal
+  onReport, // Function to report the article
 }) => {
   return (
     // Material UI Dialog component to show the modal
@@ -80,6 +82,10 @@ const ArticleDetailsModal: React.FC<ArticleDetailsModalProps> = ({
 
       {/* Modal Actions */}
       <DialogActions>
+        {/* Report button to report the article */}
+        <Button onClick={onReport} color="secondary" variant="outlined">
+          Report
+        </Button>
         {/* Close button to close the modal */}
         <Button onClick={onClose} color="primary">
           Close
