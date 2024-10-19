@@ -196,8 +196,11 @@ const ArticlesView = () => {
         open={open}
         loading={loading}
         selectedArticle={selectedArticle}
-        onClose={handleCloseModal}
-      />
+        onClose={handleCloseModal} onReport={function (): void {
+          throw new Error('Function not implemented.');
+        } }      />
+
+        
 
       <Snackbar
         open={!!error}
