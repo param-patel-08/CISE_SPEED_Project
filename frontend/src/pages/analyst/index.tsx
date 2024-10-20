@@ -1,6 +1,7 @@
 // Import necessary dependencies and components from React and MUI
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Article } from "../../components/article/Article";
 import { 
   Box, 
   Button, 
@@ -53,7 +54,7 @@ const SercAnalyst: React.FC = () => {
 
   // Fetch the list of articles from an API when the component is mounted
   useEffect(() => {
-    axios.get<Article[]>("/api/articles/shortlisted") // Replace with your API endpoint
+    axios.get<Article[]>("/api/articles") 
       .then(response => {
         setArticles(response.data); // Store the fetched articles in the state
         console.log("\n Response.Data:\n", response.data, "\n"); // Log the response data for debugging
