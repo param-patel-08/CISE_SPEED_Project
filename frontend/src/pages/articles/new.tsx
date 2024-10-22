@@ -240,8 +240,6 @@ const NewArticle = () => {
             <MenuItem value="Support" style={{ color: "green" }}>Support</MenuItem>
           </TextField>
 
-          
-
           <Button variant="contained" color="primary" type="submit">
             Submit
           </Button>
